@@ -9,4 +9,15 @@ Boost (Don't know exactly yet, since I don't have it downloaded and installed
 
 The Software Development Strategy that we plan on using is Extreme Programming.
 
+The customer wants a 2D sidescroller game, but they don't have any details on
+graphics, or game mechanics yet. They will get back to us ASAP.
+
+In the mean time, we should start getting the base game framework together, and such. This means getting a graphics framework together, a sound framework together, and a scripting framework together.
+
+The graphics framework will contain all things that have to do with graphics calls, transformations, GUI, etc.
+
+The sound framework will contain all things that have to do with sound calls, background music, sound effects, etc.
+
+The scripting system will allow us to test many different game things without recompile, such as levels, characters, music, enemies, etc.
+
 
