@@ -1,0 +1,12 @@
+Soooooo, Things that need to be installed are:
+MinGW (mingw.org)
+GLFW (glfw.org) Take the move the glfw lib to MinGW/lib, and glfw.h to
+    MinGW/include/GL
+GLU
+GLEE (opengl.org/sdk/libs/GLee/) Download the latest, move GLEE lib to MinGW/lib    and GLEE.h to MinGW/include/GL 
+Boost (Don't know exactly yet, since I don't have it downloaded and installed
+    quite yet. More information later.)
+
+The Software Development Strategy that we plan on using is Extreme Programming.
+
+
