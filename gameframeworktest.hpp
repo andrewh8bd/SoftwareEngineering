@@ -13,6 +13,7 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			g = new GameFramework;
 			TS_ASSERT(g != NULL);
 			TS_ASSERT_EQUALS(g->getNumberOfLevels(), 0);
+			TS_ASSERT_EQUALS(g->getNumberOfGateways(), 0);
 			
 			delete g;
 		}
@@ -24,14 +25,15 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			g1 = new GameFramework;
 			
 			g1->addLevel(*(new Level));
+			g1->addGateway(*(new Gateway));
 			g2 = new GameFramework(*g1);
-			
-			TS_ASSERT_EQUALS(g1->getNumberOfLevels(), g2->getNumberOfLevels());
 			
 						
 			TS_ASSERT(g2 != NULL);
 			TS_ASSERT_EQUALS(g1->getNumberOfLevels(), g2->getNumberOfLevels());
 			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), 1);
+			TS_ASSERT_EQUALS(g1->getNumberOfGateways(), g2->getNumberOfLevels());
+			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), 1);
 			
 			delete g1;
 			delete g2;
@@ -39,10 +41,12 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			for(int i=0; i < 100; i++)
 			{
 				g1->addLevel(*(new Level));
+				g1->addGateway(*(new Level));
 			}
 			
 			g2 = new GameFramework(*g1);
 			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), g1->getNumberOfLevels())
+			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), g1->getNumberOfGateways())
 		//	for(std::list<Level>::iterator at = g1->getLevels().begin(),
 		//	    std::list<Level>::iterator bt = g2->getLevels().begin();
 		//		at != g1->getLevels().end(), bt != g2->getLevels();
@@ -63,11 +67,18 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			
 			*g2 = *g1;
 			
+			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), 0);
+			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), 0);
 			TS_ASSERT_EQUALS(g1->getNumberOfLevels(), g2->getNumberOfLevels());
+			TS_ASSERT_EQUALS(g1->getNumberOfGatways(), g2->getNumberOfGateways());
 			g1->addLevel(*(new Level));
+			g2->addGateway(*(new Gateway));
 			
 			*g2 = *g1;
+			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), 1);
+			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), 1);
 			TS_ASSERT_EQUALS(g1->getNumberOfLevels(), g2->getNumberOfLevels());
+			TS_ASSERT_EQUALS(g1->getNumberOfGateways(), g2->getNumberOfGateways());
 			//TS_ASSERT_EQUALS(g1->getLevel(0), g2->getLevel(0));
 						
 			
@@ -78,11 +89,13 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			for(int i=0; i < 100; i++)
 			{
 				g1->addLevel(*(new Level));
+				g1->addGateway(*(new Gateway));
 			}
 			
 			*g2 = *g1;
 			
 			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), g1->getNumberOfLevels())
+			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), g1->getNumberOfGateways())
 		//	for(std::list<Level>::iterator at = g1->getLevels().begin(),
 		//	    std::list<Level>::iterator bt = g2->getLevels().begin();
 		//		at != g1->getLevels().end(), bt != g2->getLevels();
@@ -193,6 +206,107 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			delete a;
 		}
 		
+		
+		
+		void testAddGateway()
+		{
+			GameFramework* a = new GameFramework;
+			Gateway* l = new Gateway;
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 0);
+			a->addGateway(*l);
+			
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 1);
+			//TS_ASSERT_EQUALS(a->getGateway(0), *l);
+			
+			delete a;
+			delete l;
+			
+			a = new GameFramework;
+			
+			for(int i=0; i<100; i++)
+			{
+				l = new Gateway;
+				TS_ASSERT_EQUALS(a->getNumberOfGateways(), i);
+				a->addGateway(*l);
+				TS_ASSERT_EQUALS(a->getNumberOfGateways(), i+1);
+				l = NULL;
+			}
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 100);
+			
+		}
+		
+		void testRemoveGateway()
+		{
+			///TODO
+		}
+		
+		void testGetGateways()
+		{
+			GameFramework* a = new GameFramework;
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 0);
+			
+			Gateway* l = new Gateway;
+			std::list<Gateway> ls;
+			a->addGateway(*l);
+			ls.push_back(*l);
+			
+			TS_ASSERT_EQUALS(a->getGateways().size(), ls.size());
+			TS_ASSERT_EQUALS(a->getGateways().size(), 1);
+			
+			delete a;
+			ls.clear();
+			delete l;
+			
+			a = new GameFramework;
+			for(int i=0; i<100; i++)
+			{
+				l = new Gateway;
+				a->addGateway(*l);
+				ls.push_back(*l);
+				l = NULL;
+				
+				TS_ASSERT_EQUALS(a->getGateways().size(), ls.size());
+				TS_ASSERT_EQUALS(a->getGateways().size() - 1, i);
+			}
+			delete a;
+			ls.clear();
+			delete l;
+		}
+		
+		void testGetGatewaysPerLevel()
+		{
+			///TODO
+		}
+		
+		void testGetGatwaysPerTwoLevels()
+		{
+			///TODO
+		}
+		
+		void testGetGateway()
+		{
+			///TODO
+		}
+		
+		void testGetNumberOfGateways()
+		{
+			GameFramework* a = new GameFramework;
+			
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 0);
+			
+			a->addGateway(*(new Gateway));
+			TS_ASSERT_EQUALS(a->getNumberOfGateways(), 1);
+			
+			delete a;
+			a = new GameFramework;
+			for(int i = 0; i < 1000; i++)
+			{
+				a->addGateway(*(new Gateway));
+				TS_ASSERT_EQUALS(a->getNumberOfGateways() - 1, i);
+			}
+			
+			delete a;
+		}
 };
 
 #endif
