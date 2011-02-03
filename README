@@ -4,19 +4,20 @@ GLFW (glfw.org) Take the move the glfw lib to MinGW/lib, and glfw.h to
     MinGW/include/GL
 GLU
 GLEE (opengl.org/sdk/libs/GLee/) Download the latest, move GLEE lib to MinGW/lib    and GLEE.h to MinGW/include/GL 
-Boost (Don't know exactly yet, since I don't have it downloaded and installed
-    quite yet. More information later.)
+CXX Test (This will be for the required unit testing) (cxxtest.tigris.org)
 
-The Software Development Strategy that we plan on using is Extreme Programming.
+The Software Development Strategy that we plan on using is Unified Process :D
 
 The customer wants a 2D sidescroller game, but they don't have any details on
 graphics, or game mechanics yet. They will get back to us ASAP.
 
-In the mean time, we should start getting the base game framework together, and such. This means getting a graphics framework together, a sound framework together, and a scripting framework together.
+Details from customer: They want a 2D platformer, shooter, RPG style side scroller. If this confuses you think Mario+Contra+Champions of Norrath.
 
 The graphics framework will contain all things that have to do with graphics calls, transformations, GUI, etc.
 
 The sound framework will contain all things that have to do with sound calls, background music, sound effects, etc.
+
+The physics framework will contain all things that have to do with physics calls, etc.
 
 The scripting system will allow us to test many different game things without recompile, such as levels, characters, music, enemies, etc.
 
