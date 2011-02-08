@@ -11,7 +11,7 @@ The Software Development Strategy that we plan on using is Unified Process :D
 The customer wants a 2D sidescroller game, but they don't have any details on
 graphics, or game mechanics yet. They will get back to us ASAP.
 
-Details from customer: They want a 2D platformer, shooter, RPG style side scroller. If this confuses you think Mario+Contra+Champions of Norrath.
+Details from customer: They want a 2D platformer, shooter, RPG style side scroller. If this confuses you think Mario+Contra+Champions of Norrath. Still looking for an easy story, if anyone has ideas let me know.
 
 The graphics framework will contain all things that have to do with graphics calls, transformations, GUI, etc.
 
@@ -19,6 +19,5 @@ The sound framework will contain all things that have to do with sound calls, ba
 
 The physics framework will contain all things that have to do with physics calls, etc.
 
-The scripting system will allow us to test many different game things without recompile, such as levels, characters, music, enemies, etc.
-
+Dr. Bond informed me that we aren't allowed to embed a scripting system in our program, which is unfortunate because it's such a good idea for games. Looks like we'll just code it directly in C++.
 
