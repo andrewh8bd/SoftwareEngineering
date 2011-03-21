@@ -41,7 +41,7 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			for(int i=0; i < 100; i++)
 			{
 				g1->addLevel(*(new Level));
-				g1->addGateway(*(new Level));
+				g1->addGateway(*(new Gateway));
 			}
 			
 			g2 = new GameFramework(*g1);
@@ -70,9 +70,9 @@ class GameFrameworkTest : public CxxTest::TestSuite
 			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), 0);
 			TS_ASSERT_EQUALS(g2->getNumberOfGateways(), 0);
 			TS_ASSERT_EQUALS(g1->getNumberOfLevels(), g2->getNumberOfLevels());
-			TS_ASSERT_EQUALS(g1->getNumberOfGatways(), g2->getNumberOfGateways());
+			TS_ASSERT_EQUALS(g1->getNumberOfGateways(), g2->getNumberOfGateways());
 			g1->addLevel(*(new Level));
-			g2->addGateway(*(new Gateway));
+			g1->addGateway(*(new Gateway));
 			
 			*g2 = *g1;
 			TS_ASSERT_EQUALS(g2->getNumberOfLevels(), 1);

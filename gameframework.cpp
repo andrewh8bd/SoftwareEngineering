@@ -4,7 +4,7 @@ GameFramework::GameFramework()
 {
 }
 
-GameFramework::GameFramework(const GameFramework& _gf) : m_levels(_gf.m_levels)
+GameFramework::GameFramework(const GameFramework& _gf) : m_levels(_gf.m_levels), m_gateways(_gf.m_gateways)
 {
 }
 
@@ -17,6 +17,8 @@ const GameFramework& GameFramework::operator=(const GameFramework& _gf)
 {
 	m_levels.clear();
 	m_levels = _gf.m_levels;
+  m_gateways.clear();
+  m_gateways = _gf.m_gateways;
 	return *this;
 }
 
