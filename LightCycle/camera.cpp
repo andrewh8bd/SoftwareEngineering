@@ -5,7 +5,7 @@
 #include "ogl-math/glm/gtc/type_ptr.hpp"
 #include <iostream>
 
-Camera::Camera(const glm::vec3 p, const glm::vec3 r) : GameObject(p, r), m_transformation(1.0)
+Camera::Camera(const glm::vec3 p, const glm::vec3 r) : GameObject(p, r), m_transformation(1.0), m_distancetofocus(p)
 {
 }
 
@@ -89,10 +89,16 @@ void Camera::update(const float deltatime)
 {
   glm::mat4 newtrans(1.0);
   
+  std::cout<<"Camera pos: "<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
   newtrans = glm::rotate(newtrans, -m_rotation[0], glm::vec3(1.0, 0.0, 0.0));
   newtrans = glm::rotate(newtrans, -m_rotation[1], glm::vec3(0.0, 1.0, 0.0));
   newtrans = glm::rotate(newtrans, -m_rotation[2], glm::vec3(0.0, 0.0, 1.0));
   newtrans = glm::translate(newtrans, -m_position);
   m_transformation = newtrans;
   glLoadMatrixf(glm::value_ptr(m_transformation));
+}
+
+glm::vec3 Camera::getDistanceToFocus() const
+{
+  return m_distancetofocus;
 }

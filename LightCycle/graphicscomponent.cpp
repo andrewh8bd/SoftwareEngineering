@@ -98,3 +98,13 @@ void GraphicsComponent::setGraphicsState(const GRAPHICS_STATE g)
 {
   m_graphicsstate = g;
 }
+
+void GraphicsComponent::setVBOHandle(const unsigned int v)
+{
+  m_vbohandle = v;
+}
+
+unsigned int GraphicsComponent::getVBOHandle() const
+{
+  return m_vbohandle;
+}

@@ -5,6 +5,7 @@
 #include "action.h"
 #include <vector>
 
+//Connects an event to an action. I don't often connect pointers, but when I do: I create structs.
 struct EventToAction
 {
   Event* e;
@@ -14,23 +15,28 @@ struct EventToAction
 /*****************************************************************************/
 /*Class: EventHandler                                                        */
 /*Description: Handles all events and the actions that are associated with   */
-/*             them.                                                         */
+/*             them. Click = mouse click, hotspot = mouse in an area, key-   */
+/*             board = key down or up.                                       */ 
 /*****************************************************************************/
 
 class EventHandler
 {
   private:
   std::vector<EventToAction> m_events;
-  public:
+  static EventHandler* m_instance;
   EventHandler();
+  public:
   ~EventHandler();
+  static EventHandler* getInstance();
   KeyboardEvent* createKeyboardEvent(const int, const KEY_TYPE, Action*);
   MouseEvent* createMouseClickEvent(const int, Action*);
   MouseEvent* createMouseHotspotEvent(const unsigned int, const unsigned int, 
                                       const unsigned int, const unsigned int, Action*);
   MouseEvent* createMouseClickHotspotEvent(const int, const unsigned int, const unsigned int,
                                            const unsigned int, const unsigned int, Action*);
+  void createConstantEvent(Action*);
   void update(float deltatime);
+  void dump();
 };
 
 #endif

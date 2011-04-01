@@ -1,15 +1,20 @@
 #include "eventhandler.h"
+#include <iostream>
+
+EventHandler* EventHandler::m_instance = NULL;
 EventHandler::EventHandler()
 {
 }
 
 EventHandler::~EventHandler()
 {
-  for(std::vector<EventToAction>::iterator it=m_events.begin(); it != m_events.end(); it++)
-  {
-    delete it->a;
-    delete it->e;
-  }
+}
+
+EventHandler* EventHandler::getInstance()
+{
+  if(m_instance == NULL)
+    m_instance = new EventHandler;
+  return m_instance;
 }
 
 KeyboardEvent* EventHandler::createKeyboardEvent(const int key, const KEY_TYPE type, Action* a)
@@ -65,13 +70,40 @@ MouseEvent* EventHandler::createMouseClickHotspotEvent(const int click, const un
   return m;
 }
 
+void EventHandler::createConstantEvent(Action* a)
+{
+  EventToAction ea;
+  ea.a = a;
+  ea.e = NULL;
+  m_events.push_back(ea);
+}
+
 void EventHandler::update(float deltatime)
 {
+  //If there are active actions, update them!
+  //Check the not active ones to see if their events were triggered!
   for(std::vector<EventToAction>::iterator it = m_events.begin(); it!= m_events.end(); it++)
   {
-    if(it->e->queryFor() && !it->a->isRunning())
+    if((it->e == NULL || it->e->queryFor()) && !it->a->isRunning())
     {
       it->a->trigger();
     }
+    else if(it->a->isRunning())
+    {
+      if(!it->a->hasCompleted())
+      {
+        it->a->update(deltatime);
+      }
+    }
   }
+}
+
+void EventHandler::dump()
+{
+  for(std::vector<EventToAction>::iterator it=m_events.begin(); it != m_events.end(); it++)
+  {
+    delete it->a;
+    delete it->e;
+  }
+  delete m_instance;
 }

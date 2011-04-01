@@ -36,6 +36,7 @@ class GraphicsComponent
   std::vector<unsigned int> m_textureids;
   std::vector<unsigned int> m_samplerlocations;
   glm::mat4 m_transform;
+  unsigned int m_vbohandle; //If it's dynamic. Needed to update it's vertex infoooomation.
   
   public:
   GraphicsComponent();
@@ -57,6 +58,8 @@ class GraphicsComponent
   void setSamplerLocations(const std::vector<unsigned int>&);
   GRAPHICS_STATE getGraphicsState() const;
   void setGraphicsState(const GRAPHICS_STATE);
+  void setVBOHandle(const unsigned int);
+  unsigned int getVBOHandle() const;
 };
 
 #endif

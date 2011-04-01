@@ -11,7 +11,7 @@ class GameObject
   glm::vec3 m_rotation;
   glm::vec3 m_position;
   public:
-  GameObject() {}
+  GameObject() : m_rotation(0.0, 0.0, 0.0), m_position(0.0, 0.0, 0.0) {}
   GameObject(const glm::vec3 p, const glm::vec3 r) : m_rotation(r), m_position(p) {}
   virtual void setPosition(const glm::vec3&)=0;
   virtual glm::vec3 getPosition() const = 0;

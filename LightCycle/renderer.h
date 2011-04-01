@@ -7,8 +7,11 @@
 #include <string>
 #include "graphicscomponent.h"
 #include "ogl-math/glm/glm.hpp"
+
+//Lets us get a byte offset to be used with the vbos
 #define BUFFER_OFFSET(i) ((char*)NULL + i)
 
+//2 meg buffer size
 const int MAX_BUFFER_SIZE = 2097152;
 
 
@@ -38,9 +41,11 @@ class Renderer
     
     unsigned int m_numstaticindices;
     unsigned int m_numdynamicindices;
-    
-  public:
     Renderer();
+    static Renderer* m_instance;
+  public:
+    ~Renderer();
+    static Renderer* getInstance();
     void initialize();
     GraphicsComponent* createStaticGraphicsComponent(const std::vector<glm::vec3>&, const std::vector<glm::vec3>&,
                                                      const std::vector<glm::vec2>&);
@@ -49,6 +54,7 @@ class Renderer
     unsigned int loadAndGetShader(std::string, std::string);
     unsigned int loadAndGetTexture(std::string);
     void render();
+    void dump();
 };
 
 #endif

@@ -4,12 +4,30 @@
 #include <fstream>
 #include <iostream>
 
+Renderer* Renderer::m_instance = NULL;
 Renderer::Renderer() : m_staticvertexbufferobject(0), m_dynamicvertexbufferobject(0),
                        m_staticindexbufferobject(0), m_dynamicindexbufferobject(0),
                        m_numstaticindices(0), m_numdynamicindices(0)
 {
 }
 
+Renderer::~Renderer()
+{
+  for(std::vector<GraphicsComponent*>::iterator it = m_graphicscomponents.begin(); it != m_graphicscomponents.end(); it++)
+  {
+    delete (*it);
+  }
+}
+
+Renderer* Renderer::getInstance()
+{
+  if(m_instance == NULL)
+    m_instance = new Renderer;
+  return m_instance;
+}
+
+//Initializes the renderer, gives us 2 different patches (static and dynamic)
+//both of 2Meg size in the form of OpenGL's Vertex Buffer Objects.
 void Renderer::initialize()
 {
   glGenBuffers(1, &m_staticvertexbufferobject);
@@ -34,6 +52,11 @@ void Renderer::initialize()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+//This allows us to create a graphic component from specified vertices, normals
+//and texture coordinates. A pointer to the specific component is returned for
+//control by the programmer, and the renderer keeps a pointer to it to do it's
+//rendering. This is added to the static patch in that it's vertex information
+//does not change over the course of rendering.
 GraphicsComponent* Renderer::createStaticGraphicsComponent(const std::vector<glm::vec3>& vs, const std::vector<glm::vec3>& ns,
                                                          const std::vector<glm::vec2>& ts)
 {
@@ -81,6 +104,11 @@ GraphicsComponent* Renderer::createStaticGraphicsComponent(const std::vector<glm
   return gc;
 }
 
+//This allows us to create a graphic component from specified vertices, normals
+//and texture coordinates. A pointer to the specific component is returned for
+//control by the programmer, and the renderer keeps a pointer to it to do it's
+//rendering. This is added to the dynamic patch in that it's vertex information
+//can change over the course of rendering.
 GraphicsComponent* Renderer::createDynamicGraphicsComponent(const std::vector<glm::vec3>& vs, const std::vector<glm::vec3>& ns,
                                                             const std::vector<glm::vec2>& ts)
 {
@@ -112,6 +140,9 @@ GraphicsComponent* Renderer::createDynamicGraphicsComponent(const std::vector<gl
   
   gc->setVBOEnd(gc->getVBOBegin() + vertices.size() - 1);
   
+  gc->setVertexInformation(vertices);
+  gc->setVBOHandle(m_dynamicvertexbufferobject);
+  
   glBindBuffer(GL_ARRAY_BUFFER, m_dynamicvertexbufferobject);
   glBufferSubData(GL_ARRAY_BUFFER, m_numdynamicindices*32, vertices.size()*32, &vertices[0]);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -123,6 +154,11 @@ GraphicsComponent* Renderer::createDynamicGraphicsComponent(const std::vector<gl
   m_graphicscomponents.push_back(gc);
   return gc;
 }
+
+//This lets us load a shader to be applied to a graphics component to give a
+//high level of precision and control over the way it looks in the end.
+//Vname is the filename of the vertex shader and fname is the filename of the
+//fragment shader. An opengl shader id is returned.
 
 unsigned int Renderer::loadAndGetShader(const std::string vname, const std::string fname)
 {
@@ -241,6 +277,8 @@ unsigned int Renderer::loadAndGetShader(const std::string vname, const std::stri
   return program;
 }
 
+//This allows us to load a texture from file using SOIL. A opengl texture unit
+//is returned.
 unsigned int Renderer::loadAndGetTexture(const std::string filename)
 {
   unsigned int tex = 0;
@@ -252,55 +290,80 @@ unsigned int Renderer::loadAndGetTexture(const std::string filename)
   return tex;
 }
 
+//This is called once every frame, and updates the graphics shown on the screen
 void Renderer::render()
 {
+  //For every graphic component the renderer knows about
   for(std::vector<GraphicsComponent*>::iterator it = m_graphicscomponents.begin();
                                                       it != m_graphicscomponents.end(); it++)
   {
+    //Check if it's visible
     if((*it)->isVisible())
     {
-      glLoadMatrixf(glm::value_ptr((*it)->getTransformation()));
+      //Save the matrix (which should be holding camera information currently)
+      glPushMatrix();
+      //Multiply the graphics component's transformation matrix by the 
+      //current top matrix.
+      glMultMatrixf(glm::value_ptr((*it)->getTransformation()));
       
+      //Check to see if the shader program provided with the graphicscomponent
+      //actually exists
       if(glIsProgram((*it)->getShaderProgram()))
       {
         int prog;
         glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
         if(prog != (*it)->getShaderProgram())
+          //If so, connect the program
           glUseProgram((*it)->getShaderProgram());
       }
       else
       {
+        //If not, don't use a shader
         glUseProgram(0);
       }
-          
+       
+      //If it's a dynamic graphics component use the dynamic patch (vbo)       
       if((*it)->getGraphicsState() == DYNAMIC)
         glBindBuffer(GL_ARRAY_BUFFER, m_dynamicvertexbufferobject);
+      //Otherwise use the static patch
       else
         glBindBuffer(GL_ARRAY_BUFFER, m_staticvertexbufferobject);
       
+      //Start vertices
       glEnableClientState(GL_VERTEX_ARRAY);
       glVertexPointer(3, GL_FLOAT, 32, BUFFER_OFFSET(0));
+      //Start normals
       glEnableClientState(GL_NORMAL_ARRAY);
       glNormalPointer(GL_FLOAT, 32, BUFFER_OFFSET(12));
+      
+      //For each possible texture start the texture coordinates
+      //and turn on the respective texture unit. Also send texture
+      //information to the shader(if it exists).
       for(int a = 0; a < (*it)->getTextures().size(); a++)
       {
         glActiveTexture(GL_TEXTURE0 + a);
         glBindTexture(GL_TEXTURE_2D, (*it)->getTextures()[a]);
-        glUniform1i((*it)->getSamplerLocation(a), a);
+        if(glIsProgram((*it)->getShaderProgram()))
+          glUniform1i((*it)->getSamplerLocation(a), a);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glTexCoordPointer(2, GL_FLOAT, 32, BUFFER_OFFSET(24));
       }
       
+      //If it's on the dynamic patch start the dynamic index array
+      //and draw this patch.
       if((*it)->getGraphicsState() == DYNAMIC)
       {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_dynamicindexbufferobject);
         glDrawRangeElements(GL_TRIANGLES, 0, m_numdynamicindices, (*it)->getVBOEnd() - (*it)->getVBOBegin() + 1, GL_UNSIGNED_INT, BUFFER_OFFSET(4*(*it)->getVBOBegin()));
       }
+      //Else start the static index array and draw the patch.
       else
       {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_staticindexbufferobject);
         glDrawRangeElements(GL_TRIANGLES, 0, m_numstaticindices, (*it)->getVBOEnd() - (*it)->getVBOBegin() + 1, GL_UNSIGNED_INT, BUFFER_OFFSET(4*(*it)->getVBOBegin()));
       }
+      
+      //Turn everything off, and pop the matrix off.
       for(int i=(*it)->getTextures().size() - 1; i >= 0; i--)
       {
         glClientActiveTexture(GL_TEXTURE0 + i);
@@ -312,6 +375,12 @@ void Renderer::render()
       
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glPopMatrix();
     }
   }
+}
+
+void Renderer::dump()
+{
+  delete m_instance;
 }

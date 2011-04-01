@@ -21,6 +21,7 @@ class Camera : public GameObject
   glm::vec3 m_acceleration;
   glm::vec3 m_angularvelocity;
   glm::vec3 m_angularacceleration;
+  glm::vec3 m_distancetofocus;
   public:
   Camera(const glm::vec3 p = glm::vec3(0.0, 0.0, 0.0), const glm::vec3 r = glm::vec3(0.0, 0.0, 0.0));
   ~Camera();
@@ -38,6 +39,7 @@ class Camera : public GameObject
   glm::vec3 getAngularAcceleration() const;
   void setAngularAcceleration(const glm::vec3&);
   glm::vec3 getAcceleration() const;
+  glm::vec3 getDistanceToFocus() const;
   void update(const float);
 };
 

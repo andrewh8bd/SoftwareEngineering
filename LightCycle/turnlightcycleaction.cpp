@@ -70,6 +70,7 @@ bool TurnLightCycleAction::hasCompleted()
                                   glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(m_oldvelocity, 1.0);
     
     m_cycle->setVelocity(glm::vec3(rotatedvelocity[0], rotatedvelocity[1], rotatedvelocity[2]));
+    m_cycle->addNewWall();
     m_alreadyturning = false;
     return true;
   }
