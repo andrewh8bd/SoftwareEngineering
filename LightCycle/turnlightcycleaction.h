@@ -25,6 +25,7 @@ class TurnLightCycleAction : public Action
   bool m_running;
   static bool m_alreadyturning;
   glm::vec3 m_oldvelocity;
+  glm::vec3 m_oldacceleration;
   glm::vec3 m_oldrotation;
   public:
   TurnLightCycleAction(LightCycle* c = NULL, const DIRECTION d = RIGHT, const float tt = 0.05);

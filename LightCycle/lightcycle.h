@@ -25,6 +25,7 @@ class LightCycle : public GameObject
   glm::vec3 m_acceleration;
   glm::vec3 m_angularvelocity;
   glm::vec3 m_angularacceleration;
+  glm::vec3 m_startingvelocity;
   GraphicsComponent* m_graphicscomponent;
   std::vector<LightCycleWall*> m_walls; //The one one the back is the one connected 
                                         //to the light cycle.
@@ -51,6 +52,8 @@ class LightCycle : public GameObject
   glm::vec3 getAcceleration() const;
   void setTransformation(const glm::mat4&);
   glm::mat4 getTransformation();
+  glm::vec3 getBaseVelocity() const;
+  void setBaseVelocity(const glm::vec3&);
   void addNewWall();
   void update(const float deltatime);
 };

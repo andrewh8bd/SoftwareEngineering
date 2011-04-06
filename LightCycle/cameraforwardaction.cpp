@@ -19,6 +19,7 @@ void CameraForwardAction::trigger()
 {
   m_running = true;
   m_camera->setVelocity(m_velocity);
+  m_camera->setBaseVelocity(m_velocity);
 }
 
 bool CameraForwardAction::isRunning()
@@ -35,10 +36,11 @@ bool CameraForwardAction::hasCompleted()
 void CameraForwardAction::update(float deltatime)
 {
   glm::vec3 addedtranslation(0.0, 0.0, 0.0);
-  glm::vec3 vel = m_camera->getVelocity();
   glm::vec3 acc = m_camera->getAcceleration();
-  addedtranslation = vel * deltatime + acc * deltatime * deltatime * 0.5f;
-  
-  m_camera->setPosition(m_camera->getPosition() + glm::vec3(addedtranslation[0], addedtranslation[1],
-                                          addedtranslation[2]));
+  glm::vec3 vel = m_camera->getVelocity();
+  m_camera->setVelocity(vel += acc * deltatime);
+  vel = m_camera->getVelocity();
+  addedtranslation = vel * deltatime;
+  std::cout<<"Velocity: "<<vel[0]<<" "<<vel[1]<<" "<<vel[2]<<std::endl;
+  m_camera->setPosition(m_camera->getPosition() + glm::vec3(addedtranslation[0], addedtranslation[1], addedtranslation[2]));
 }

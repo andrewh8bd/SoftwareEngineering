@@ -25,8 +25,9 @@ void TurnCameraAction::trigger()
       m_camera->setAngularVelocity(glm::vec3(0.0, 90.0 / -m_turntime, 0.0));
     m_oldvelocity = m_camera->getVelocity();
     m_oldrotation = m_camera->getRotation();
-    
+    m_oldacceleration = m_camera->getAcceleration();
     m_camera->setVelocity(glm::vec3(0.0, 0.0, 0.0));
+    m_camera->setAcceleration(glm::vec3(0.0, 0.0, 0.0));
     m_alreadyturning = true;
   }
 }
@@ -67,7 +68,10 @@ bool TurnCameraAction::hasCompleted()
     
     glm::vec4 rotatedvelocity = glm::rotate(glm::mat4(1.0), m_camera->getRotation()[1] - m_oldrotation[1],
                                   glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(m_oldvelocity, 1.0);
-        
+    
+    glm::vec4 rotatedaccel = glm::rotate(glm::mat4(1.0), m_camera->getRotation()[1] - m_oldrotation[1],
+                                  glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(m_oldacceleration, 1.0);
+    m_camera->setAcceleration(glm::vec3(rotatedaccel[0], rotatedaccel[1], rotatedaccel[2]));    
     m_camera->setVelocity(glm::vec3(rotatedvelocity[0], rotatedvelocity[1], rotatedvelocity[2]));
     m_alreadyturning = false;
     return true;

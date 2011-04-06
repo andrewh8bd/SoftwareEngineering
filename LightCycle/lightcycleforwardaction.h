@@ -11,7 +11,6 @@ class LightCycleForwardAction : public Action
 {
   private:
   LightCycle* m_cycle;
-  bool m_running;
   glm::vec3 m_velocity;
   public:
   LightCycleForwardAction();

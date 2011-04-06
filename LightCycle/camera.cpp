@@ -89,7 +89,6 @@ void Camera::update(const float deltatime)
 {
   glm::mat4 newtrans(1.0);
   
-  std::cout<<"Camera pos: "<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
   newtrans = glm::rotate(newtrans, -m_rotation[0], glm::vec3(1.0, 0.0, 0.0));
   newtrans = glm::rotate(newtrans, -m_rotation[1], glm::vec3(0.0, 1.0, 0.0));
   newtrans = glm::rotate(newtrans, -m_rotation[2], glm::vec3(0.0, 0.0, 1.0));
@@ -101,4 +100,14 @@ void Camera::update(const float deltatime)
 glm::vec3 Camera::getDistanceToFocus() const
 {
   return m_distancetofocus;
+}
+
+void Camera::setBaseVelocity(const glm::vec3& v)
+{
+  m_startingvelocity = v;
+}
+
+glm::vec3 Camera::getBaseVelocity() const
+{
+  return m_startingvelocity;
 }

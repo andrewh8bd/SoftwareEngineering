@@ -26,6 +26,7 @@ class TurnCameraAction : public Action
   static bool m_alreadyturning;
   glm::vec3 m_oldvelocity;
   glm::vec3 m_oldrotation;
+  glm::vec3 m_oldacceleration;
   bool m_running;
   public:
   TurnCameraAction(Camera* c = NULL, const DIRECTION d = RIGHT, const float tt = 0.05);

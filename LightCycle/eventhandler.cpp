@@ -88,7 +88,7 @@ void EventHandler::update(float deltatime)
     {
       it->a->trigger();
     }
-    else if(it->a->isRunning())
+    if(it->a->isRunning())
     {
       if(!it->a->hasCompleted())
       {

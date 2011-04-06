@@ -1,7 +1,9 @@
 #include "applicationframework.h"
 #include "lightcycle.h"
 #include "turnlightcycleaction.h"
+#include "lightcycleaccelerateaction.h"
 #include "turncameraaction.h"
+#include "cameraaccelerateaction.h"
 #include "lightcycleforwardaction.h"
 #include "cameraforwardaction.h"
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
@@ -27,14 +29,14 @@ void ApplicationFramework::initialize()
   //It also makes the window the specified height and width.
 	glfwOpenWindow(m_windowwidth, m_windowheight, 8, 8, 8, 8, 8, 0, GLFW_WINDOW);
 	glMatrixMode(GL_PROJECTION);
-    //Load the identity  matrix 
-		glLoadIdentity();
-    //Cute little perspective projection with near clip plane at z = 0 and far at z = 1000
-    //90 degree field of view.
-    glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth), static_cast<float>(m_windowheight), 0.0f, 1000.0f))));
+  //Load the identity  matrix 
+  glLoadIdentity();
+  //Cute little perspective projection with near clip plane at z = 0 and far at z = 1000
+  //90 degree field of view.
+  glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth), static_cast<float>(m_windowheight), 0.0f, 1000.0f))));
 	glMatrixMode(GL_MODELVIEW);
     //Load the identity matrix
-		glLoadIdentity();
+  glLoadIdentity();
   
   //Initialize shit
   Renderer::getInstance()->initialize();
@@ -250,6 +252,10 @@ void ApplicationFramework::switchToGameState()
   TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
   TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
   CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
+  CameraAccelerateAction* cd = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), true);
+  CameraAccelerateAction* ce = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), false);
+  CameraAccelerateAction* cf = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), false);
+  CameraAccelerateAction* cg = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), true);
   
   //Create light cycle as well as a few actions for it
   GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
@@ -258,7 +264,10 @@ void ApplicationFramework::switchToGameState()
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
   TurnLightCycleAction* b = new TurnLightCycleAction(l, LEFT);
   LightCycleForwardAction* c = new LightCycleForwardAction(l, glm::vec3(0.0, 0.0, 6.0));
-  
+  LightCycleAccelerateAction* d = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, 1.0), true);
+  LightCycleAccelerateAction* e = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), false);
+  LightCycleAccelerateAction* h = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, 1.0), false);
+  LightCycleAccelerateAction* i = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), true);
   //Create other bullshit so we can see that we are moving
   GraphicsComponent *asdf = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
   asdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(1.0, 0.0, 3.0)));
@@ -273,8 +282,16 @@ void ApplicationFramework::switchToGameState()
   m_gameobjects.push_back(l);
   EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, b);
   EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, a);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, d);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
   EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
   EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
   EventHandler::getInstance()->createConstantEvent(cc);
