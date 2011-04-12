@@ -14,7 +14,9 @@ class KeyboardEvent : public Event
   KeyboardEvent();
   ~KeyboardEvent();
   void setKey(const int);
+  int getKey() const;
   void setType(const KEY_TYPE);
+  KEY_TYPE getType() const;
   bool queryFor();
 };
 

@@ -14,9 +14,19 @@ void MouseEvent::setType(const MOUSE_TYPE m)
   m_type == m;
 }
 
+MOUSE_TYPE MouseEvent::getType() const
+{
+  return m_type;
+}
+
 void MouseEvent::setButton(const int c)
 {
   m_button = c;
+}
+
+int MouseEvent::getButton() const
+{
+  return m_button;
 }
 
 void MouseEvent::setHotspot(const int x1, const int y1, const int x2, const int y2)

@@ -40,6 +40,7 @@ class EventHandler
   void createConstantEvent(Action*);
   void update(float deltatime);
   void dump();
+  std::vector<EventToAction> getEvents() const;
 };
 
 #endif

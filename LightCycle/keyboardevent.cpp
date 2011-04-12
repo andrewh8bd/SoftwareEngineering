@@ -16,9 +16,19 @@ void KeyboardEvent::setKey(const int c)
   m_laststate = glfwGetKey(m_keycode) == GLFW_PRESS;
 }
 
+int KeyboardEvent::getKey() const
+{
+  return m_keycode;
+}
+
 void KeyboardEvent::setType(const KEY_TYPE k)
 {
   m_keytype = k;
+}
+
+KEY_TYPE KeyboardEvent::getType() const
+{
+  return m_keytype;
 }
 
 bool KeyboardEvent::queryFor()

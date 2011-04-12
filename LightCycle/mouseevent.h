@@ -20,8 +20,10 @@ class MouseEvent : public Event
   MouseEvent();
   ~MouseEvent();
   void setButton(const int);
+  int getButton() const;
   void setHotspot(const int, const int, const int, const int);
   void setType(const MOUSE_TYPE);
+  MOUSE_TYPE getType() const;
   bool queryFor();
 };
 

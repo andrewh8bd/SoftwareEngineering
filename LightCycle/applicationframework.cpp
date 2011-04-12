@@ -40,9 +40,10 @@ void ApplicationFramework::initialize()
   
   //Initialize shit
   Renderer::getInstance()->initialize();
-  
+    
   //Switch to game state for now, since we don't have a menu.
   switchToGameState();
+  std::cout<<"Derping"<<std::endl;
 }
 
 //Main loop runs in this.
@@ -84,7 +85,9 @@ void ApplicationFramework::run()
         break;
     }
     //Update event handler and camera
+    std::cout<<"Derping"<<std::endl;
     EventHandler::getInstance()->update(glfwGetTime() - lasttime);
+    std::cout<<"Derping"<<std::endl;
     m_currentcamera->update(glfwGetTime() - lasttime);
     //Save camera matrix
     glPushMatrix();
@@ -259,6 +262,7 @@ void ApplicationFramework::switchToGameState()
   
   //Create light cycle as well as a few actions for it
   GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+  
   LightCycle* l = new LightCycle(g, glm::vec3(0.0, 0.0, 0.0),
                                  glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
@@ -270,7 +274,7 @@ void ApplicationFramework::switchToGameState()
   LightCycleAccelerateAction* i = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), true);
   //Create other bullshit so we can see that we are moving
   GraphicsComponent *asdf = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-  asdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(1.0, 0.0, 3.0)));
+  asdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)));
   GraphicsComponent *sdf = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
   sdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(-1.0, 0.0, 3.0)));
   GraphicsComponent *df = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
@@ -295,6 +299,27 @@ void ApplicationFramework::switchToGameState()
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
   EventHandler::getInstance()->createConstantEvent(cc);
+  
+  std::cout<<"Dumping"<<std::endl;
+  EventHandler::getInstance()->dump();
+  std::cout<<"Done"<<std::endl;
+  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, b);
+  std::cout<<"Added some shit"<<std::endl;
+  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, a);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, d);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
+  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
+  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
+  //Or constant events that happen allllll the time
+  EventHandler::getInstance()->createConstantEvent(c);
+  EventHandler::getInstance()->createConstantEvent(cc);
+  std::cout<<"Added some shit"<<std::endl;
   
   //Create Ground
     //Yeah right, not yet. BLACKNESS.
