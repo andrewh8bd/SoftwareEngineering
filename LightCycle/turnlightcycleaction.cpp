@@ -32,7 +32,6 @@ void TurnLightCycleAction::trigger()
 
 bool TurnLightCycleAction::isRunning()
 {
-  std::cout<<"Meow?"<<std::endl;
   return m_running;
 }
 

@@ -6,6 +6,7 @@
 #include "cameraaccelerateaction.h"
 #include "lightcycleforwardaction.h"
 #include "cameraforwardaction.h"
+#include "physicsmanager.h"
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include "ogl-math/glm/gtc/type_ptr.hpp"
 #include <GL/glfw.h>
@@ -43,7 +44,6 @@ void ApplicationFramework::initialize()
     
   //Switch to game state for now, since we don't have a menu.
   switchToGameState();
-  std::cout<<"Derping"<<std::endl;
 }
 
 //Main loop runs in this.
@@ -85,19 +85,19 @@ void ApplicationFramework::run()
         break;
     }
     //Update event handler and camera
-    std::cout<<"Derping"<<std::endl;
     EventHandler::getInstance()->update(glfwGetTime() - lasttime);
-    std::cout<<"Derping"<<std::endl;
     m_currentcamera->update(glfwGetTime() - lasttime);
     //Save camera matrix
     glPushMatrix();
+    PhysicsManager::getInstance()->update();
     //Updates game objects
     for(std::vector<GameObject*>::iterator it = m_gameobjects.begin(); it != m_gameobjects.end(); it++)
     {
       (*it)->update(glfwGetTime() - lasttime);
     }
     //Update renderer
-    Renderer::getInstance()->render();
+   // glColor3f(0.2, 0.2, 0.1);
+   // Renderer::getInstance()->render();
     //Restore camera matrix
     glPopMatrix();
     lasttime = glfwGetTime();
@@ -251,7 +251,7 @@ void ApplicationFramework::switchToGameState()
   ts.push_back(glm::vec2(0.0, 0.0));
   
   //Create camera, as well as a few actions for it
-  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, 0.0), glm::vec3(45.0, 0.0, 0.0));
+  m_currentcamera = new Camera(glm::vec3(0.0, 5.0, 0.0), glm::vec3(90.0, 0.0, 0.0));
   TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
   TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
   CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
@@ -262,9 +262,11 @@ void ApplicationFramework::switchToGameState()
   
   //Create light cycle as well as a few actions for it
   GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+  Box2D* gbox = PhysicsManager::getInstance()->createBox(vs);
   
-  LightCycle* l = new LightCycle(g, glm::vec3(0.0, 0.0, 0.0),
+  LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, 0.0),
                                  glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
+    
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
   TurnLightCycleAction* b = new TurnLightCycleAction(l, LEFT);
   LightCycleForwardAction* c = new LightCycleForwardAction(l, glm::vec3(0.0, 0.0, 6.0));
@@ -290,36 +292,16 @@ void ApplicationFramework::switchToGameState()
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
-  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
-  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
+  //EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
+  //EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
+  //EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
+  //EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
+  //EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
+  //EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
-  EventHandler::getInstance()->createConstantEvent(cc);
+  //EventHandler::getInstance()->createConstantEvent(cc);
   
-  std::cout<<"Dumping"<<std::endl;
-  EventHandler::getInstance()->dump();
-  std::cout<<"Done"<<std::endl;
-  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, b);
-  std::cout<<"Added some shit"<<std::endl;
-  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, a);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, d);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
-  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
-  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
-  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
-  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
-  //Or constant events that happen allllll the time
-  EventHandler::getInstance()->createConstantEvent(c);
-  EventHandler::getInstance()->createConstantEvent(cc);
-  std::cout<<"Added some shit"<<std::endl;
   
   //Create Ground
     //Yeah right, not yet. BLACKNESS.
