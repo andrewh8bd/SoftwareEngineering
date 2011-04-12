@@ -82,29 +82,19 @@ void EventHandler::update(float deltatime)
 {
   //If there are active actions, update them!
   //Check the not active ones to see if their events were triggered!
-  std::cout<<"Ass"<<std::endl;
-  std::cout<<"Size: "<<m_events.size()<<std::endl;
   for(std::vector<EventToAction>::iterator it = m_events.begin(); it!= m_events.end(); it++)
   {
-    std::cout<<"Ass"<<std::endl;
-    std::cout<<(it->e == NULL)<<" "<<(it->a == NULL)<<std::endl;
     if((it->e == NULL || it->e->queryFor()) && !it->a->isRunning())
     {
       it->a->trigger();
     }
-    (it->a)->isRunning();
-    std::cout<<"Ass"<<std::endl;
-    std::cout<<typeid(*(it->a)).name()<<std::endl;
     if(it->a->isRunning())
     {
-      std::cout<<"banana"<<std::endl;
       if(!it->a->hasCompleted())
       {
-        std::cout<<"banana"<<std::endl;
         it->a->update(deltatime);
       }
     }
-    std::cout<<"Ass"<<std::endl;
   }
 }
 

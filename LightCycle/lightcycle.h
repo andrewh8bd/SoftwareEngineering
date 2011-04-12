@@ -4,6 +4,7 @@
 #include "graphicscomponent.h"
 #include "gameobject.h"
 #include "lightcyclewall.h"
+#include "box2d.h"
 #include <vector>
 
 /*****************************************************************************/
@@ -27,11 +28,12 @@ class LightCycle : public GameObject
   glm::vec3 m_angularacceleration;
   glm::vec3 m_startingvelocity;
   GraphicsComponent* m_graphicscomponent;
+  Box2D* m_boundingbox;
   std::vector<LightCycleWall*> m_walls; //The one one the back is the one connected 
                                         //to the light cycle.
   
   public:
-  LightCycle(GraphicsComponent* g = NULL, const glm::vec3& pos = glm::vec3(0.0, 0.0, 0.0),
+  LightCycle(GraphicsComponent* g = NULL, Box2D* box = NULL, const glm::vec3& pos = glm::vec3(0.0, 0.0, 0.0),
              const glm::vec3& rot = glm::vec3(0.0, 0.0, 0.0), const glm::vec4& color = glm::vec4(1.0, 1.0, 1.0, 1.0));
   ~LightCycle();
   void setColor(const glm::vec4&);

@@ -20,7 +20,6 @@ CameraAccelerateAction::~CameraAccelerateAction()
 
 void CameraAccelerateAction::trigger()
 {
-  std::cout<<"Trigger dat bitch"<<std::endl;
   m_running = true;
   m_startvelocity = m_camera->getBaseVelocity();
   glm::vec4 rotatedaccel = glm::rotate(glm::mat4(1.0), m_camera->getRotation()[1],

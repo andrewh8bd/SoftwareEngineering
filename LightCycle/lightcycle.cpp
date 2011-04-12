@@ -1,15 +1,16 @@
 #include "lightcycle.h"
+#include "physicsmanager.h"
 #include "ogl-math/glm/glm.hpp"
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include "renderer.h"
 #include <iostream>
 #include <vector>
 
-LightCycle::LightCycle(GraphicsComponent* g, const glm::vec3& pos, const glm::vec3& rot, const glm::vec4& color)
+LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, const glm::vec3& rot, const glm::vec4& color)
   : m_graphicscomponent(g), m_color(color), m_velocity(glm::vec3(0.0, 0.0, 0.0)),
     m_acceleration(glm::vec3(0.0, 0.0, 0.0)), m_angularvelocity(glm::vec3(0.0, 0.0, 0.0)),
     m_angularacceleration(glm::vec3(0.0, 0.0, 0.0)), 
-    GameObject(pos, rot)
+    GameObject(pos, rot), m_boundingbox(box)
 {
   std::vector<glm::vec3> wallverts;
   std::vector<glm::vec3> wallnorms;
@@ -63,13 +64,16 @@ LightCycle::LightCycle(GraphicsComponent* g, const glm::vec3& pos, const glm::ve
   walltexs.push_back(glm::vec2(1.0, 0.0));
   walltexs.push_back(glm::vec2(1.0, 1.0));
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
-  LightCycleWall* newwall = new LightCycleWall(newgp, m_color);
+  Box2D* newbox = PhysicsManager::getInstance()->createBox(wallverts);
+  
+  LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
   m_walls.push_back(newwall);
 }
 
 LightCycle::~LightCycle()
 {
   delete m_graphicscomponent;
+  delete m_boundingbox;
 }
 
 void LightCycle::setColor(const glm::vec4& v)
@@ -157,6 +161,7 @@ void LightCycle::setAngularAcceleration(const glm::vec3& v)
 void LightCycle::setTransformation(const glm::mat4& m )
 {
   m_graphicscomponent->setTransformation(m);
+  m_boundingbox->setTransformation(m);
 }
 
 glm::mat4 LightCycle::getTransformation()
@@ -186,7 +191,6 @@ void LightCycle::addNewWall()
   wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
   wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
   
-/* NOT NEEDED HERE, NEEDED ON A LIGHTCYCLE TURN */
   glm::vec3 newposnorm = glm::normalize(glm::cross(wallverts[1] - wallverts[0], wallverts[2] - wallverts[0]));
   glm::vec3 newnegnorm = glm::normalize(glm::cross(wallverts[4] - wallverts[3], wallverts[5] - wallverts[3]));
     
@@ -222,7 +226,8 @@ void LightCycle::addNewWall()
   walltexs.push_back(glm::vec2(1.0, 0.0));
   walltexs.push_back(glm::vec2(1.0, 1.0));
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
-  LightCycleWall* newwall = new LightCycleWall(newgp, m_color);
+  Box2D* newbox = PhysicsManager::getInstance()->createBox(wallverts); 
+  LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
   m_walls.push_back(newwall);
 }
 
@@ -237,6 +242,24 @@ void LightCycle::update(const float deltatime)
   
   
   m_graphicscomponent->setTransformation(newtrans);
+  m_boundingbox->setTransformation(newtrans);
+  for(std::vector<Box2D*>::const_iterator it = m_boundingbox->getColliders().begin();
+      it != m_boundingbox->getColliders().end(); it++)
+  {
+    bool c = false;
+    for(std::vector<LightCycleWall*>::iterator bt = m_walls.end(); bt != m_walls.end() && bt > m_walls.end() - 3; bt--)
+    {
+      if(*it == (*bt)->getBoundingBox())
+        c = true;
+    }
+    if(!c)
+    {
+      //COLLISION COLLISION COLLISION WOO
+      std::cout<<"A collision has been found with "<<*it<<" Neato."<<std::endl;
+    }
+  }
+  m_boundingbox->clearColliders();
+  
 }
 
 void LightCycle::setBaseVelocity(const glm::vec3& v)

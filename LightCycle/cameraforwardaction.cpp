@@ -41,6 +41,5 @@ void CameraForwardAction::update(float deltatime)
   m_camera->setVelocity(vel += acc * deltatime);
   vel = m_camera->getVelocity();
   addedtranslation = vel * deltatime;
-  std::cout<<"Velocity: "<<vel[0]<<" "<<vel[1]<<" "<<vel[2]<<std::endl;
   m_camera->setPosition(m_camera->getPosition() + glm::vec3(addedtranslation[0], addedtranslation[1], addedtranslation[2]));
 }
