@@ -2,6 +2,7 @@
 #include <limits>
 #include <fstream>
 #include <cstdlib>
+#include <iostream>
 
 Box2D::Box2D() : m_transform(1.0)
 {
@@ -26,9 +27,18 @@ Box2D::Box2D(const std::vector<glm::vec3>& vs)
   m_corners[1] = glm::vec2(maxx, minz);
   m_corners[2] = glm::vec2(minx, minz);
   m_corners[3] = glm::vec2(minx, maxz);
+  
 }
 
-bool Box2D::intersect(Box2D& l)
+Box2D::Box2D(const glm::vec2& a, const glm::vec2& b)
+{
+  m_corners[0] = a;
+  m_corners[1] = a;
+  m_corners[2] = b;
+  m_corners[3] = b;
+}
+
+bool Box2D::intersect(Box2D* l)
 {
   glm::vec4 transformedcorners1[4];
   glm::vec4 transformedcorners2[4];
@@ -37,10 +47,10 @@ bool Box2D::intersect(Box2D& l)
   transformedcorners1[1] = m_transform * glm::vec4(m_corners[1][0], 1.0, m_corners[1][1], 1.0);
   transformedcorners1[2] = m_transform * glm::vec4(m_corners[2][0], 1.0, m_corners[2][1], 1.0);
   transformedcorners1[3] = m_transform * glm::vec4(m_corners[3][0], 1.0, m_corners[3][1], 1.0);
-  transformedcorners2[0] = l.m_transform * glm::vec4(l.m_corners[0][0], 1.0, l.m_corners[0][1], 1.0);
-  transformedcorners2[1] = l.m_transform * glm::vec4(l.m_corners[1][0], 1.0, l.m_corners[1][1], 1.0);
-  transformedcorners2[2] = l.m_transform * glm::vec4(l.m_corners[2][0], 1.0, l.m_corners[2][1], 1.0);
-  transformedcorners2[3] = l.m_transform * glm::vec4(l.m_corners[3][0], 1.0, l.m_corners[3][1], 1.0);
+  transformedcorners2[0] = l->m_transform * glm::vec4(l->m_corners[0][0], 1.0, l->m_corners[0][1], 1.0);
+  transformedcorners2[1] = l->m_transform * glm::vec4(l->m_corners[1][0], 1.0, l->m_corners[1][1], 1.0);
+  transformedcorners2[2] = l->m_transform * glm::vec4(l->m_corners[2][0], 1.0, l->m_corners[2][1], 1.0);
+  transformedcorners2[3] = l->m_transform * glm::vec4(l->m_corners[3][0], 1.0, l->m_corners[3][1], 1.0);
   
   for(int a=0; a<4; a++)
   {
@@ -48,10 +58,10 @@ bool Box2D::intersect(Box2D& l)
     {
       if(lineIntersect(glm::vec2(transformedcorners1[a][0], transformedcorners1[a][2]),
                        glm::vec2(transformedcorners1[(a+1)%4][0], transformedcorners1[(a+1)%4][2]),
-                       glm::vec2(transformedcorners2[a][0], transformedcorners2[a][2]),
-                       glm::vec2(transformedcorners2[(a+1)%4][0], transformedcorners2[(a+1)%4][2])))
+                       glm::vec2(transformedcorners2[b][0], transformedcorners2[b][2]),
+                       glm::vec2(transformedcorners2[(b+1)%4][0], transformedcorners2[(b+1)%4][2])))
       {
-        m_colliders.push_back(&l);
+        m_colliders.push_back(l);
         return true;
       }
     }
@@ -93,7 +103,7 @@ glm::mat4 Box2D::getTransformation() const
   return m_transform; 
 }
 
-std::vector<Box2D*> Box2D::getColliders() const
+std::vector<Box2D*>& Box2D::getColliders()
 {
   return m_colliders;
 }
@@ -127,4 +137,10 @@ void Box2D::clearColliders()
 glm::vec2* Box2D::getCorners()
 {
   return m_corners;
+}
+
+void Box2D::setEnd(const glm::vec2& e)
+{
+  m_corners[2] = e;
+  m_corners[3] = e;
 }

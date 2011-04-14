@@ -1,6 +1,7 @@
 #include "lightcycle.h"
 #include "physicsmanager.h"
 #include "ogl-math/glm/glm.hpp"
+#include "ogl-math/glm/gtc/type_ptr.hpp"
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include "renderer.h"
 #include <iostream>
@@ -12,62 +13,6 @@ LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, c
     m_angularacceleration(glm::vec3(0.0, 0.0, 0.0)), 
     GameObject(pos, rot), m_boundingbox(box)
 {
-  std::vector<glm::vec3> wallverts;
-  std::vector<glm::vec3> wallnorms;
-  std::vector<glm::vec2> walltexs;
-  
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-      
-  wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-  
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(-1.0, 0.0, 0.0));
-      
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  wallnorms.push_back(glm::vec3(1.0, 0.0, 0.0));
-  
-  walltexs.push_back(glm::vec2(0.0, 0.0));
-  walltexs.push_back(glm::vec2(0.0, 1.0));
-  walltexs.push_back(glm::vec2(1.0, 1.0));
-  
-  walltexs.push_back(glm::vec2(1.0, 1.0));
-  walltexs.push_back(glm::vec2(0.0, 1.0));
-  walltexs.push_back(glm::vec2(0.0, 0.0));
-  
-  walltexs.push_back(glm::vec2(1.0, 1.0));
-  walltexs.push_back(glm::vec2(1.0, 0.0));
-  walltexs.push_back(glm::vec2(0.0, 0.0));
-      
-  walltexs.push_back(glm::vec2(0.0, 0.0));
-  walltexs.push_back(glm::vec2(1.0, 0.0));
-  walltexs.push_back(glm::vec2(1.0, 1.0));
-  GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
-  Box2D* newbox = PhysicsManager::getInstance()->createBox(wallverts);
-  
-  LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
-  m_walls.push_back(newwall);
 }
 
 LightCycle::~LightCycle()
@@ -226,7 +171,8 @@ void LightCycle::addNewWall()
   walltexs.push_back(glm::vec2(1.0, 0.0));
   walltexs.push_back(glm::vec2(1.0, 1.0));
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
-  Box2D* newbox = PhysicsManager::getInstance()->createBox(wallverts); 
+  Box2D* newbox = PhysicsManager::getInstance()->createBox(glm::vec2(m_position[0], m_position[2]),
+                                                           glm::vec2(m_position[0], m_position[2]));
   LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
   m_walls.push_back(newwall);
 }
@@ -243,21 +189,18 @@ void LightCycle::update(const float deltatime)
   
   m_graphicscomponent->setTransformation(newtrans);
   m_boundingbox->setTransformation(newtrans);
-  for(std::vector<Box2D*>::const_iterator it = m_boundingbox->getColliders().begin();
+  static glm::vec3 color(1.0, 0.0, 1.0);
+  for(std::vector<Box2D*>::iterator it = m_boundingbox->getColliders().begin();
       it != m_boundingbox->getColliders().end(); it++)
   {
-    bool c = false;
-    for(std::vector<LightCycleWall*>::iterator bt = m_walls.end(); bt != m_walls.end() && bt > m_walls.end() - 3; bt--)
+    if(*it != m_walls.back()->getBoundingBox() && (m_walls.size() >= 2 && m_walls[m_walls.size() - 2]->getBoundingBox() != (*it)))
     {
-      if(*it == (*bt)->getBoundingBox())
-        c = true;
-    }
-    if(!c)
-    {
-      //COLLISION COLLISION COLLISION WOO
-      std::cout<<"A collision has been found with "<<*it<<" Neato."<<std::endl;
+      color[0] *= -1.0; color[0] += 1.0;
+      color[1] *= -1.0; color[1] += 1.0;
+      color[2] *= -1.0; color[2] += 1.0;
     }
   }
+  glColor3fv(glm::value_ptr(color));
   m_boundingbox->clearColliders();
   
 }

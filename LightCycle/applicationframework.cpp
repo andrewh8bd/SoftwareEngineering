@@ -85,19 +85,18 @@ void ApplicationFramework::run()
         break;
     }
     //Update event handler and camera
+    PhysicsManager::getInstance()->update();
     EventHandler::getInstance()->update(glfwGetTime() - lasttime);
     m_currentcamera->update(glfwGetTime() - lasttime);
     //Save camera matrix
     glPushMatrix();
-    PhysicsManager::getInstance()->update();
     //Updates game objects
     for(std::vector<GameObject*>::iterator it = m_gameobjects.begin(); it != m_gameobjects.end(); it++)
     {
       (*it)->update(glfwGetTime() - lasttime);
     }
     //Update renderer
-   // glColor3f(0.2, 0.2, 0.1);
-   // Renderer::getInstance()->render();
+    Renderer::getInstance()->render();
     //Restore camera matrix
     glPopMatrix();
     lasttime = glfwGetTime();
@@ -251,7 +250,7 @@ void ApplicationFramework::switchToGameState()
   ts.push_back(glm::vec2(0.0, 0.0));
   
   //Create camera, as well as a few actions for it
-  m_currentcamera = new Camera(glm::vec3(0.0, 5.0, 0.0), glm::vec3(90.0, 0.0, 0.0));
+  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, 0.0), glm::vec3(30.0, 0.0, 0.0));
   TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
   TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
   CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
@@ -266,7 +265,7 @@ void ApplicationFramework::switchToGameState()
   
   LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, 0.0),
                                  glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
-    
+  l->addNewWall();
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
   TurnLightCycleAction* b = new TurnLightCycleAction(l, LEFT);
   LightCycleForwardAction* c = new LightCycleForwardAction(l, glm::vec3(0.0, 0.0, 6.0));
@@ -292,15 +291,15 @@ void ApplicationFramework::switchToGameState()
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
-  //EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
-  //EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
-  //EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
-  //EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
-  //EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
-  //EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
+  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
+  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
+  EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
+  EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
-  //EventHandler::getInstance()->createConstantEvent(cc);
+  EventHandler::getInstance()->createConstantEvent(cc);
   
   
   //Create Ground

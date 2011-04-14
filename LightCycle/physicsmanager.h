@@ -16,6 +16,7 @@ class PhysicsManager
   void dump();
   void update();
   Box2D* createBox(const std::vector<glm::vec3>&);
+  Box2D* createBox(const glm::vec2&, const glm::vec2&);
 };
 
 #endif
