@@ -13,6 +13,10 @@ LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, c
     m_angularacceleration(glm::vec3(0.0, 0.0, 0.0)), 
     GameObject(pos, rot), m_boundingbox(box)
 {
+  if(g != NULL)
+  {
+    g->addOtherUniform(glGetUniformLocation(g->getShaderProgram(), "lccolor"), color);
+  }
 }
 
 LightCycle::~LightCycle()
@@ -171,6 +175,9 @@ void LightCycle::addNewWall()
   walltexs.push_back(glm::vec2(1.0, 0.0));
   walltexs.push_back(glm::vec2(1.0, 1.0));
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
+  newgp->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcyclewall.vert", "lightcyclewall.frag"));
+  newgp->addOtherUniform(glGetUniformLocation(newgp->getShaderProgram(), "wallcolor"), m_color);
+  
   Box2D* newbox = PhysicsManager::getInstance()->createBox(glm::vec2(m_position[0], m_position[2]),
                                                            glm::vec2(m_position[0], m_position[2]));
   LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
@@ -200,7 +207,6 @@ void LightCycle::update(const float deltatime)
       color[2] *= -1.0; color[2] += 1.0;
     }
   }
-  glColor3fv(glm::value_ptr(color));
   m_boundingbox->clearColliders();
   
 }

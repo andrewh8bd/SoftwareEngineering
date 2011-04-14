@@ -261,10 +261,14 @@ void ApplicationFramework::switchToGameState()
   
   //Create light cycle as well as a few actions for it
   GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+  g->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcycle.vert", "lightcycle.frag"));
+  g->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  g->addSamplerLocation(glGetUniformLocation(g->getShaderProgram(), "lctexture"));
+  
   Box2D* gbox = PhysicsManager::getInstance()->createBox(vs);
   
   LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, 0.0),
-                                 glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
+                                 glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.3, 1.0));
   l->addNewWall();
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
   TurnLightCycleAction* b = new TurnLightCycleAction(l, LEFT);

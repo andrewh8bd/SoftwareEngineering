@@ -315,6 +315,11 @@ void Renderer::render()
         if(prog != (*it)->getShaderProgram())
           //If so, connect the program
           glUseProgram((*it)->getShaderProgram());
+        for(std::map<unsigned int, glm::vec4>::iterator at = (*it)->getUniforms().begin();
+                                                        at != (*it)->getUniforms().end(); at++)
+        {
+          glUniform4fv(at->first, 4, glm::value_ptr(at->second));
+        }
       }
       else
       {
@@ -344,7 +349,9 @@ void Renderer::render()
         glActiveTexture(GL_TEXTURE0 + a);
         glBindTexture(GL_TEXTURE_2D, (*it)->getTextures()[a]);
         if(glIsProgram((*it)->getShaderProgram()))
+        {
           glUniform1i((*it)->getSamplerLocation(a), a);
+        }
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glTexCoordPointer(2, GL_FLOAT, 32, BUFFER_OFFSET(24));
       }

@@ -1,5 +1,6 @@
 #include "graphicscomponent.h"
 #include <iostream>
+#include <GL/GLee.h>
 GraphicsComponent::GraphicsComponent() : m_vbobeginindex(0), m_vboendindex(0), m_shaderid(0), 
                                          m_graphicsstate(STATIC), m_transform(1.0)
 {
@@ -10,6 +11,16 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponent& g) : m_vbobeginind
                                                                    m_transform(g.m_transform), m_samplerlocations(g.m_samplerlocations),
                                                                    m_textureids(g.m_textureids), m_vertexinformation(g.m_vertexinformation)
 {
+}
+
+GraphicsComponent::~GraphicsComponent()
+{
+  if(glIsProgram(m_shaderid))
+    glDeleteProgram(m_shaderid);
+  for(int i=0; i<m_textureids.size(); i++)
+  {
+    glDeleteTextures(1, &m_textureids[i]);
+  }
 }
 
 bool GraphicsComponent::isVisible() const
@@ -67,7 +78,7 @@ void GraphicsComponent::setTransformation(const glm::mat4& m)
   m_transform = m;
 }
 
-std::vector<unsigned int> GraphicsComponent::getTextures() const
+std::vector<unsigned int>& GraphicsComponent::getTextures()
 {
   return m_textureids;
 }
@@ -75,6 +86,18 @@ std::vector<unsigned int> GraphicsComponent::getTextures() const
 void GraphicsComponent::setTextures(const std::vector<unsigned int>& t)
 {
   m_textureids = t;
+}
+
+void GraphicsComponent::addTexture(const unsigned int g)
+{
+  m_textureids.push_back(g);
+}
+
+unsigned int GraphicsComponent::getTexture(const unsigned int i)
+{
+  if(i > m_textureids.size() - 1)
+    std::cout<<"Invalid texture index"<<std::endl;
+  return m_textureids[i];
 }
 
 unsigned int GraphicsComponent::getSamplerLocation(unsigned int index) const
@@ -87,6 +110,11 @@ unsigned int GraphicsComponent::getSamplerLocation(unsigned int index) const
 void GraphicsComponent::setSamplerLocations(const std::vector<unsigned int>& t)
 {
   m_samplerlocations = t;
+}
+
+void GraphicsComponent::addSamplerLocation(const unsigned int l)
+{
+  m_samplerlocations.push_back(l);
 }
 
 GRAPHICS_STATE GraphicsComponent::getGraphicsState() const
@@ -107,4 +135,14 @@ void GraphicsComponent::setVBOHandle(const unsigned int v)
 unsigned int GraphicsComponent::getVBOHandle() const
 {
   return m_vbohandle;
+}
+
+void GraphicsComponent::addOtherUniform(const unsigned int l, const glm::vec4& v)
+{
+  m_otheruniforms[l] = v;
+}
+
+std::map<unsigned int, glm::vec4>& GraphicsComponent::getUniforms()
+{
+  return m_otheruniforms;
 }

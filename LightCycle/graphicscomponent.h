@@ -1,6 +1,7 @@
 #ifndef GRAPHICSCOMPONENT_H
 #define GRAPHICSCOMPONENT_H
 #include <vector>
+#include <map>
 #include "ogl-math/glm/glm.hpp"
 
 struct VertexInformation
@@ -35,12 +36,14 @@ class GraphicsComponent
   std::vector<VertexInformation> m_vertexinformation;
   std::vector<unsigned int> m_textureids;
   std::vector<unsigned int> m_samplerlocations;
+  std::map<unsigned int, glm::vec4> m_otheruniforms;
   glm::mat4 m_transform;
   unsigned int m_vbohandle; //If it's dynamic. Needed to update it's vertex infoooomation.
   
   public:
   GraphicsComponent();
   GraphicsComponent(const GraphicsComponent&);
+  ~GraphicsComponent();
   bool isVisible() const;
   unsigned int getVBOBegin() const;
   void setVBOBegin(const unsigned int);
@@ -52,10 +55,15 @@ class GraphicsComponent
   void setVertexInformation(const std::vector<VertexInformation>&);
   glm::mat4 getTransformation() const;
   void setTransformation(const glm::mat4&);
-  std::vector<unsigned int> getTextures() const;
+  std::vector<unsigned int>& getTextures();
   void setTextures(const std::vector<unsigned int>&);
+  void addTexture(const unsigned int);
+  unsigned int getTexture(const unsigned int);
   unsigned int getSamplerLocation(unsigned int) const;
   void setSamplerLocations(const std::vector<unsigned int>&);
+  void addSamplerLocation(const unsigned int);
+  void addOtherUniform(const unsigned int, const glm::vec4&);
+  std::map<unsigned int, glm::vec4>& getUniforms();
   GRAPHICS_STATE getGraphicsState() const;
   void setGraphicsState(const GRAPHICS_STATE);
   void setVBOHandle(const unsigned int);
