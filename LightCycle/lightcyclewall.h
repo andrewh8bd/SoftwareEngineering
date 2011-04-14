@@ -15,7 +15,7 @@ class LightCycleWall
   LightCycleWall();
   LightCycleWall(GraphicsComponent* g, Box2D* box, const glm::vec4&);
   void setEndPoint(const glm::vec3&);
-  Box2D* getBoundingBox();
+  Box2D* getBoundingBox() const;
 };
 
 #endif

@@ -33,14 +33,14 @@ void LightCycleWall::setEndPoint(const glm::vec3& p)
     verts.push_back(glm::vec3(vi[i].px, vi[i].py, vi[i].pz));
   }
   
-  m_boundingbox->setCorners(verts);
+  m_boundingbox->setEnd(glm::vec2(p[0], p[2]));
   
   glBindBuffer(GL_ARRAY_BUFFER, m_graphicscomponent->getVBOHandle());
   glBufferSubData(GL_ARRAY_BUFFER, m_graphicscomponent->getVBOBegin() * 32, vi.size()*32, &vi[0].px);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-Box2D* LightCycleWall::getBoundingBox()
+Box2D* LightCycleWall::getBoundingBox() const 
 {
   return m_boundingbox;
 }
