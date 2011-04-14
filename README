@@ -1,23 +1,4 @@
-Soooooo, Things that need to be installed are:
-MinGW (mingw.org)
-GLFW (glfw.org) Take the move the glfw lib to MinGW/lib, and glfw.h to
-    MinGW/include/GL
-GLU
-GLEE (opengl.org/sdk/libs/GLee/) Download the latest, move GLEE lib to MinGW/lib    and GLEE.h to MinGW/include/GL 
-CXX Test (This will be for the required unit testing) (cxxtest.tigris.org)
-
 The Software Development Strategy that we plan on using is Unified Process :D
 
-The customer wants a 2D sidescroller game, but they don't have any details on
-graphics, or game mechanics yet. They will get back to us ASAP.
-
-Details from customer: They want a 2D platformer, shooter, RPG style side scroller. If this confuses you think Mario+Contra+Champions of Norrath. Still looking for an easy story, if anyone has ideas let me know.
-
-The graphics framework will contain all things that have to do with graphics calls, transformations, GUI, etc.
-
-The sound framework will contain all things that have to do with sound calls, background music, sound effects, etc.
-
-The physics framework will contain all things that have to do with physics calls, etc.
-
-Dr. Bond informed me that we aren't allowed to embed a scripting system in our program, which is unfortunate because it's such a good idea for games. Looks like we'll just code it directly in C++.
+The customer wants a Tron Light Cycles game.
 
