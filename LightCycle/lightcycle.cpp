@@ -177,7 +177,6 @@ void LightCycle::addNewWall()
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
   newgp->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcyclewall.vert", "lightcyclewall.frag"));
   newgp->addOtherUniform(glGetUniformLocation(newgp->getShaderProgram(), "wallcolor"), m_color);
-  
   Box2D* newbox = PhysicsManager::getInstance()->createBox(glm::vec2(m_position[0], m_position[2]),
                                                            glm::vec2(m_position[0], m_position[2]));
   LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
