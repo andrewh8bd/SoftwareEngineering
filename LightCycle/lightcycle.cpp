@@ -15,8 +15,7 @@ LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, c
 {
   if(g != NULL)
   {
-    unsigned int ul = glGetUniformLocation(g->getShaderProgram(), "lccolor");
-    g->addOtherUniform(glGetUniformLocation(g->getShaderProgram(), "lccolor"), glm::vec4(1.0, 0.0, 0.0, 1.0));
+    g->addOtherUniform(glGetUniformLocation(g->getShaderProgram(), "lccolor"), color);
   }
 }
 
@@ -131,19 +130,19 @@ void LightCycle::addNewWall()
   
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
   
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
   
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
       
   wallverts.push_back(glm::vec3(m_position[0], 0.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
-  wallverts.push_back(glm::vec3(m_position[0], 1.0, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
+  wallverts.push_back(glm::vec3(m_position[0], 0.5, m_position[2]));
   
   glm::vec3 newposnorm = glm::normalize(glm::cross(wallverts[1] - wallverts[0], wallverts[2] - wallverts[0]));
   glm::vec3 newnegnorm = glm::normalize(glm::cross(wallverts[4] - wallverts[3], wallverts[5] - wallverts[3]));
