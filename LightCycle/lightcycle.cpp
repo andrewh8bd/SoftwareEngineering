@@ -15,7 +15,8 @@ LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, c
 {
   if(g != NULL)
   {
-    g->addOtherUniform(glGetUniformLocation(g->getShaderProgram(), "lccolor"), color);
+    unsigned int ul = glGetUniformLocation(g->getShaderProgram(), "lccolor");
+    g->addOtherUniform(glGetUniformLocation(g->getShaderProgram(), "lccolor"), glm::vec4(1.0, 0.0, 0.0, 1.0));
   }
 }
 
@@ -28,6 +29,10 @@ LightCycle::~LightCycle()
 void LightCycle::setColor(const glm::vec4& v)
 {
   m_color = v;
+  for(std::vector<LightCycleWall*>::iterator it = m_walls.begin(); it != m_walls.end(); it++)
+  {
+    (*it)->setColor(v);
+  }
 }
 
 glm::vec4 LightCycle::getColor() const
@@ -176,7 +181,9 @@ void LightCycle::addNewWall()
   walltexs.push_back(glm::vec2(1.0, 1.0));
   GraphicsComponent* newgp = Renderer::getInstance()->createDynamicGraphicsComponent(wallverts, wallnorms, walltexs);
   newgp->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcyclewall.vert", "lightcyclewall.frag"));
+  unsigned int ul = glGetUniformLocation(newgp->getShaderProgram(), "wallcolor");
   newgp->addOtherUniform(glGetUniformLocation(newgp->getShaderProgram(), "wallcolor"), m_color);
+  
   Box2D* newbox = PhysicsManager::getInstance()->createBox(glm::vec2(m_position[0], m_position[2]),
                                                            glm::vec2(m_position[0], m_position[2]));
   LightCycleWall* newwall = new LightCycleWall(newgp, newbox, m_color);
@@ -195,15 +202,12 @@ void LightCycle::update(const float deltatime)
   
   m_graphicscomponent->setTransformation(newtrans);
   m_boundingbox->setTransformation(newtrans);
-  static glm::vec3 color(1.0, 0.0, 1.0);
   for(std::vector<Box2D*>::iterator it = m_boundingbox->getColliders().begin();
       it != m_boundingbox->getColliders().end(); it++)
   {
     if(*it != m_walls.back()->getBoundingBox() && (m_walls.size() >= 2 && m_walls[m_walls.size() - 2]->getBoundingBox() != (*it)))
     {
-      color[0] *= -1.0; color[0] += 1.0;
-      color[1] *= -1.0; color[1] += 1.0;
-      color[2] *= -1.0; color[2] += 1.0;
+      std::cout<<"COLLIDE BITCH"<<std::endl;
     }
   }
   m_boundingbox->clearColliders();

@@ -44,3 +44,9 @@ Box2D* LightCycleWall::getBoundingBox() const
 {
   return m_boundingbox;
 }
+
+void LightCycleWall::setColor(const glm::vec4& c)
+{
+  m_color = c;
+}
+

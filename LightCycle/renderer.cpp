@@ -318,7 +318,7 @@ void Renderer::render()
         for(std::map<unsigned int, glm::vec4>::iterator at = (*it)->getUniforms().begin();
                                                         at != (*it)->getUniforms().end(); at++)
         {
-          glUniform4fv(at->first, 4, glm::value_ptr(at->second));
+          glUniform4fv(at->first, 1, glm::value_ptr(at->second));
         }
       }
       else

@@ -278,14 +278,6 @@ void ApplicationFramework::switchToGameState()
   LightCycleAccelerateAction* h = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, 1.0), false);
   LightCycleAccelerateAction* i = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), true);
   //Create other bullshit so we can see that we are moving
-  GraphicsComponent *asdf = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-  asdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)));
-  GraphicsComponent *sdf = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-  sdf->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(-1.0, 0.0, 3.0)));
-  GraphicsComponent *df = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-  df->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(3.0, 0.0, 3.0)));
-  GraphicsComponent *f = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-  f->setTransformation(glm::translate(glm::mat4(1.0), glm::vec3(-3.0, 0.0, 3.0)));
   
   //Hand actions to eventhandler to be connected with keyboard events.
   m_gameobjects.push_back(l);
