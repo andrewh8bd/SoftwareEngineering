@@ -31,6 +31,7 @@ class LightCycle : public GameObject
   Box2D* m_boundingbox;
   std::vector<LightCycleWall*> m_walls; //The one one the back is the one connected 
                                         //to the light cycle.
+  bool m_alreadyturning;
   
   public:
   LightCycle(GraphicsComponent* g = NULL, Box2D* box = NULL, const glm::vec3& pos = glm::vec3(0.0, 0.0, 0.0),
@@ -58,6 +59,8 @@ class LightCycle : public GameObject
   void setBaseVelocity(const glm::vec3&);
   void addNewWall();
   void update(const float deltatime);
+  void setAlreadyTurning(const bool);
+  bool getAlreadyTurning() const;
 };
 
 #endif

@@ -11,7 +11,7 @@ LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, c
   : m_graphicscomponent(g), m_color(color), m_velocity(glm::vec3(0.0, 0.0, 0.0)),
     m_acceleration(glm::vec3(0.0, 0.0, 0.0)), m_angularvelocity(glm::vec3(0.0, 0.0, 0.0)),
     m_angularacceleration(glm::vec3(0.0, 0.0, 0.0)), 
-    GameObject(pos, rot), m_boundingbox(box)
+    GameObject(pos, rot), m_boundingbox(box), m_alreadyturning(false)
 {
   if(g != NULL)
   {
@@ -210,7 +210,6 @@ void LightCycle::update(const float deltatime)
   {
     if(*it != m_walls.back()->getBoundingBox() && (m_walls.size() >= 2 && m_walls[m_walls.size() - 2]->getBoundingBox() != (*it)))
     {
-      std::cout<<"COLLIDE BITCH"<<std::endl;
     }
   }
   m_boundingbox->clearColliders();
@@ -225,4 +224,14 @@ void LightCycle::setBaseVelocity(const glm::vec3& v)
 glm::vec3 LightCycle::getBaseVelocity() const
 {
   return m_startingvelocity;
+}
+
+void LightCycle::setAlreadyTurning(const bool a)
+{
+  m_alreadyturning = a;
+}
+
+bool LightCycle::getAlreadyTurning() const
+{
+  return m_alreadyturning;
 }

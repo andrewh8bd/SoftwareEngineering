@@ -23,6 +23,7 @@ class Camera : public GameObject
   glm::vec3 m_angularacceleration;
   glm::vec3 m_distancetofocus;
   glm::vec3 m_startingvelocity;
+  bool m_alreadyturning;
   public:
   Camera(const glm::vec3 p = glm::vec3(0.0, 0.0, 0.0), const glm::vec3 r = glm::vec3(0.0, 0.0, 0.0));
   ~Camera();
@@ -44,6 +45,8 @@ class Camera : public GameObject
   glm::vec3 getBaseVelocity() const;
   void setBaseVelocity(const glm::vec3&);
   void update(const float);
+  void setAlreadyTurning(const bool);
+  bool getAlreadyTurning() const;
 };
 
 #endif

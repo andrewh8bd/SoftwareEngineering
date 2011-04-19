@@ -23,7 +23,6 @@ class TurnLightCycleAction : public Action
   float m_timetaken;
   float m_turntime;
   bool m_running;
-  static bool m_alreadyturning;
   glm::vec3 m_oldvelocity;
   glm::vec3 m_oldacceleration;
   glm::vec3 m_oldrotation;

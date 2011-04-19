@@ -29,15 +29,6 @@ void ApplicationFramework::initialize()
   //(we don't need stencil  buffer). It also puts it in a window instead of fullscreen.
   //It also makes the window the specified height and width.
 	glfwOpenWindow(m_windowwidth, m_windowheight, 8, 8, 8, 8, 8, 0, GLFW_WINDOW);
-	glMatrixMode(GL_PROJECTION);
-  //Load the identity  matrix 
-  glLoadIdentity();
-  //Cute little perspective projection with near clip plane at z = 0 and far at z = 1000
-  //90 degree field of view.
-  glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
-	glMatrixMode(GL_MODELVIEW);
-    //Load the identity matrix
-  glLoadIdentity();
   
   glClearDepth(1.0);
   glEnable(GL_DEPTH_TEST);
@@ -84,6 +75,25 @@ void ApplicationFramework::run()
         break;
       case GAME:
         //This isn't the switch case you're looking for.
+        glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        m_currentcamera->update(glfwGetTime() - lasttime);
+        Renderer::getInstance()->render();
+        
+        
+        glViewport(m_windowwidth / 2, 0, m_windowwidth / 2, m_windowheight);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2.0), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        m_secondcamera->update(glfwGetTime() - lasttime);
+        Renderer::getInstance()->render();
+        
         break;
       default:
         break;
@@ -91,14 +101,12 @@ void ApplicationFramework::run()
     //Update event handler and camera
     PhysicsManager::getInstance()->update();
     EventHandler::getInstance()->update(glfwGetTime() - lasttime);
-    m_currentcamera->update(glfwGetTime() - lasttime);
     //Updates game objects
     for(std::vector<GameObject*>::iterator it = m_gameobjects.begin(); it != m_gameobjects.end(); it++)
     {
       (*it)->update(glfwGetTime() - lasttime);
     }
     //Update renderer
-    Renderer::getInstance()->render();
     lasttime = glfwGetTime();
     
     //Swap dat double buffer
@@ -250,7 +258,7 @@ void ApplicationFramework::switchToGameState()
   ts.push_back(glm::vec2(0.0, 0.0));
   
   //Create camera, as well as a few actions for it
-  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, 0.0), glm::vec3(25.0, 0.0, 0.0));
+  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, -25.0), glm::vec3(25.0, 0.0, 0.0));
   TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
   TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
   CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
@@ -259,6 +267,14 @@ void ApplicationFramework::switchToGameState()
   CameraAccelerateAction* cf = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), false);
   CameraAccelerateAction* cg = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), true);
   
+  m_secondcamera = new Camera(glm::vec3(0.0, 2.0, 25.0), glm::vec3(25.0, 180.0, 0.0));
+  TurnCameraAction* ca2 = new TurnCameraAction(m_secondcamera, RIGHT);
+  TurnCameraAction* cb2 = new TurnCameraAction(m_secondcamera, LEFT);
+  CameraForwardAction* cc2 = new CameraForwardAction(m_secondcamera, glm::vec3(0.0, 0.0, -6.0));
+  CameraAccelerateAction* cd2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, -1.0), true);
+  CameraAccelerateAction* ce2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, 1.0), false);
+  CameraAccelerateAction* cf2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, -1.0), false);
+  CameraAccelerateAction* cg2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, 1.0), true);
   //Create light cycle as well as a few actions for it
   GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
   g->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcycle.vert", "lightcycle.frag"));
@@ -267,7 +283,7 @@ void ApplicationFramework::switchToGameState()
   
   Box2D* gbox = PhysicsManager::getInstance()->createBox(vs);
   
-  LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, 0.0),
+  LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, -25.0),
                                  glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
   l->addNewWall();
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
@@ -277,18 +293,37 @@ void ApplicationFramework::switchToGameState()
   LightCycleAccelerateAction* e = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), false);
   LightCycleAccelerateAction* h = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, 1.0), false);
   LightCycleAccelerateAction* i = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), true);
+  
+  
+  Box2D* gbox2 = PhysicsManager::getInstance()->createBox(vs);
+  GraphicsComponent *g2 = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+  g2->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcycle.vert", "lightcycle.frag"));
+  g2->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  g2->addSamplerLocation(glGetUniformLocation(g2->getShaderProgram(), "lctexture"));
+  
+  LightCycle* l2 = new LightCycle(g2, gbox2, glm::vec3(0.0, 0.0, 25.0),
+                                 glm::vec3(0.0, 180.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0));
+  l2->addNewWall();
+  TurnLightCycleAction* a2 = new TurnLightCycleAction(l2, RIGHT);
+  TurnLightCycleAction* b2 = new TurnLightCycleAction(l2, LEFT);
+  LightCycleForwardAction* c2 = new LightCycleForwardAction(l2, glm::vec3(0.0, 0.0, -6.0));
+  LightCycleAccelerateAction* d2 = new LightCycleAccelerateAction(l2, glm::vec3(0.0, 0.0, -1.0), true);
+  LightCycleAccelerateAction* e2 = new LightCycleAccelerateAction(l2, glm::vec3(0.0, 0.0, 1.0), false);
+  LightCycleAccelerateAction* h2 = new LightCycleAccelerateAction(l2, glm::vec3(0.0, 0.0, -1.0), false);
+  LightCycleAccelerateAction* i2 = new LightCycleAccelerateAction(l2, glm::vec3(0.0, 0.0, 1.0), true);
   //Create other bullshit so we can see that we are moving
   
   //Hand actions to eventhandler to be connected with keyboard events.
   m_gameobjects.push_back(l);
-  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, b);
-  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, a);
+  m_gameobjects.push_back(l2);
+  EventHandler::getInstance()->createKeyboardEvent('A', KEY_PRESSED, b);
+  EventHandler::getInstance()->createKeyboardEvent('D', KEY_PRESSED, a);
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, d);
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, e);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, i);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, h);
-  EventHandler::getInstance()->createKeyboardEvent('A', KEY_DOWN, cb);
-  EventHandler::getInstance()->createKeyboardEvent('D', KEY_DOWN, ca);
+  EventHandler::getInstance()->createKeyboardEvent('A', KEY_PRESSED, cb);
+  EventHandler::getInstance()->createKeyboardEvent('D', KEY_PRESSED, ca);
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_PRESSED, cd);
   EventHandler::getInstance()->createKeyboardEvent('W', KEY_RELEASED, ce);
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_PRESSED, cg);
@@ -296,6 +331,23 @@ void ApplicationFramework::switchToGameState()
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
   EventHandler::getInstance()->createConstantEvent(cc);
+  
+  
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_LEFT, KEY_PRESSED, b2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_RIGHT, KEY_PRESSED, a2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_UP, KEY_PRESSED, d2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_UP, KEY_RELEASED, e2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_DOWN, KEY_PRESSED, i2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_DOWN, KEY_RELEASED, h2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_LEFT, KEY_PRESSED, cb2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_RIGHT, KEY_PRESSED, ca2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_UP, KEY_PRESSED, cd2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_UP, KEY_RELEASED, ce2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_DOWN, KEY_PRESSED, cg2);
+  EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_DOWN, KEY_RELEASED, cf2);
+  //Or constant events that happen allllll the time
+  EventHandler::getInstance()->createConstantEvent(c2);
+  EventHandler::getInstance()->createConstantEvent(cc2);
   
   std::vector<glm::vec3> wall1vs;
   std::vector<glm::vec3> wall2vs;
@@ -427,7 +479,10 @@ void ApplicationFramework::shutDown()
 {
   EventHandler::getInstance()->dump();
   Renderer::getInstance()->dump();
+  PhysicsManager::getInstance()->dump();
   delete m_currentcamera;
+  if(m_secondcamera != NULL)
+    delete m_secondcamera;
   while(m_gameobjects.size() > 0)
   {
     delete m_gameobjects.back();

@@ -23,7 +23,6 @@ class TurnCameraAction : public Action
   DIRECTION m_direction;
   float m_timetaken;
   float m_turntime;
-  static bool m_alreadyturning;
   glm::vec3 m_oldvelocity;
   glm::vec3 m_oldrotation;
   glm::vec3 m_oldacceleration;

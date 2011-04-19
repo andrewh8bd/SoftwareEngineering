@@ -3,7 +3,6 @@
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include <iostream>
 
-bool TurnLightCycleAction::m_alreadyturning = false;
 TurnLightCycleAction::TurnLightCycleAction(LightCycle* c, const DIRECTION d, const float tt) : m_cycle(c), m_direction(d), m_timetaken(0.0), m_turntime(tt), m_running(false)
 {
 }
@@ -14,7 +13,7 @@ TurnLightCycleAction::~TurnLightCycleAction()
 
 void TurnLightCycleAction::trigger()
 {
-  if(!m_alreadyturning)
+  if(!m_cycle->getAlreadyTurning())
   {
     m_running = true;
     if(m_direction == RIGHT)
@@ -26,7 +25,7 @@ void TurnLightCycleAction::trigger()
     m_oldacceleration = m_cycle->getAcceleration();
     m_cycle->setVelocity(glm::vec3(0.0, 0.0, 0.0));
     m_cycle->setAcceleration(glm::vec3(0.0, 0.0, 0.0));
-    m_alreadyturning = true;
+    m_cycle->setAlreadyTurning(true);
   }
 }
 
@@ -76,7 +75,7 @@ bool TurnLightCycleAction::hasCompleted()
     m_cycle->setVelocity(glm::vec3(rotatedvelocity[0], rotatedvelocity[1], rotatedvelocity[2]));
     m_cycle->setAcceleration(glm::vec3(rotatedaccel[0], rotatedaccel[1], rotatedaccel[2]));
     m_cycle->addNewWall();
-    m_alreadyturning = false;
+    m_cycle->setAlreadyTurning(false);
     return true;
   }
   return false;

@@ -3,8 +3,6 @@
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include <iostream>
 
-bool TurnCameraAction::m_alreadyturning = false;
-
 TurnCameraAction::TurnCameraAction(Camera* c, const DIRECTION d, const float tt) : m_camera(c), m_direction(d), m_timetaken(0.0), m_turntime(tt), m_running(false)
 {
 }
@@ -16,7 +14,7 @@ TurnCameraAction::~TurnCameraAction()
 
 void TurnCameraAction::trigger()
 {
-  if(!m_alreadyturning)
+  if(!m_camera->getAlreadyTurning())
   {
     m_running = true;
     if(m_direction == RIGHT)
@@ -28,7 +26,7 @@ void TurnCameraAction::trigger()
     m_oldacceleration = m_camera->getAcceleration();
     m_camera->setVelocity(glm::vec3(0.0, 0.0, 0.0));
     m_camera->setAcceleration(glm::vec3(0.0, 0.0, 0.0));
-    m_alreadyturning = true;
+    m_camera->setAlreadyTurning(true);
   }
 }
 
@@ -73,7 +71,7 @@ bool TurnCameraAction::hasCompleted()
                                   glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(m_oldacceleration, 1.0);
     m_camera->setAcceleration(glm::vec3(rotatedaccel[0], rotatedaccel[1], rotatedaccel[2]));    
     m_camera->setVelocity(glm::vec3(rotatedvelocity[0], rotatedvelocity[1], rotatedvelocity[2]));
-    m_alreadyturning = false;
+    m_camera->setAlreadyTurning(false);
     return true;
   }
   return false;

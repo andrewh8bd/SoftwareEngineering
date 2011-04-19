@@ -24,6 +24,7 @@ class ApplicationFramework
   
   std::vector<GameObject*> m_gameobjects;
   Camera* m_currentcamera;
+  Camera* m_secondcamera;
   public:
   ApplicationFramework(const unsigned int w = 640, const unsigned int h = 480);
   void initialize();

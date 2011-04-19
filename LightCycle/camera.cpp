@@ -5,7 +5,7 @@
 #include "ogl-math/glm/gtc/type_ptr.hpp"
 #include <iostream>
 
-Camera::Camera(const glm::vec3 p, const glm::vec3 r) : GameObject(p, r), m_transformation(1.0), m_distancetofocus(p)
+Camera::Camera(const glm::vec3 p, const glm::vec3 r) : GameObject(p, r), m_transformation(1.0), m_distancetofocus(p), m_alreadyturning(false)
 {
 }
 
@@ -110,4 +110,14 @@ void Camera::setBaseVelocity(const glm::vec3& v)
 glm::vec3 Camera::getBaseVelocity() const
 {
   return m_startingvelocity;
+}
+
+void Camera::setAlreadyTurning(const bool a)
+{
+  m_alreadyturning = a;
+}
+
+bool Camera::getAlreadyTurning() const
+{
+  return m_alreadyturning;
 }
