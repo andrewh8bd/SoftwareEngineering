@@ -23,6 +23,10 @@ LightCycle::~LightCycle()
 {
   delete m_graphicscomponent;
   delete m_boundingbox;
+  for(std::vector<LightCycleWall*>::iterator it = m_walls.begin(); it != m_walls.end(); it++)
+  {
+    delete *it;
+  }
 }
 
 void LightCycle::setColor(const glm::vec4& v)

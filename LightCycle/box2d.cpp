@@ -38,6 +38,11 @@ Box2D::Box2D(const glm::vec2& a, const glm::vec2& b)
   m_corners[3] = b;
 }
 
+Box2D::~Box2D()
+{
+  m_colliders.clear();
+}
+
 bool Box2D::intersect(Box2D* l)
 {
   glm::vec4 transformedcorners1[4];

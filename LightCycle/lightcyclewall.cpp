@@ -12,6 +12,12 @@ LightCycleWall::LightCycleWall(GraphicsComponent* g, Box2D* box, const glm::vec4
   m_color = color;
 }
 
+LightCycleWall::~LightCycleWall()
+{
+  delete m_graphicscomponent;
+  delete m_boundingbox;
+}
+
 void LightCycleWall::setEndPoint(const glm::vec3& p)
 {
   std::vector<VertexInformation> vi = m_graphicscomponent->getVertexInformation();

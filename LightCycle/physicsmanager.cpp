@@ -28,6 +28,7 @@ void PhysicsManager::dump()
   }
   m_components.clear();
   delete m_instance;
+  m_instance = NULL;
 }
 
 void PhysicsManager::update()
