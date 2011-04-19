@@ -250,7 +250,7 @@ void ApplicationFramework::switchToGameState()
   ts.push_back(glm::vec2(0.0, 0.0));
   
   //Create camera, as well as a few actions for it
-  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, 0.0), glm::vec3(45.0, 0.0, 0.0));
+  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, 0.0), glm::vec3(25.0, 0.0, 0.0));
   TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
   TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
   CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
@@ -297,7 +297,127 @@ void ApplicationFramework::switchToGameState()
   EventHandler::getInstance()->createConstantEvent(c);
   EventHandler::getInstance()->createConstantEvent(cc);
   
+  std::vector<glm::vec3> wall1vs;
+  std::vector<glm::vec3> wall2vs;
+  std::vector<glm::vec3> wall3vs;
+  std::vector<glm::vec3> wall4vs;
+  std::vector<glm::vec3> wall1ns;
+  std::vector<glm::vec3> wall2ns;
+  std::vector<glm::vec3> wall3ns;
+  std::vector<glm::vec3> wall4ns;
+  std::vector<glm::vec2> wall1ts;
+  std::vector<glm::vec2> wall2ts;
+  std::vector<glm::vec2> wall3ts;
+  std::vector<glm::vec2> wall4ts;
+  wall1vs.push_back(glm::vec3(-50.0, 0.0, -50.0));
+  wall1vs.push_back(glm::vec3(-50.0, 0.0, 50.0));
+  wall1vs.push_back(glm::vec3(-50.0, 50.0, 50.0));
+  wall1vs.push_back(glm::vec3(-50.0, 50.0, 50.0));
+  wall1vs.push_back(glm::vec3(-50.0, 50.0, -50.0));
+  wall1vs.push_back(glm::vec3(-50.0, 0.0, -50.0));
   
+  wall2vs.push_back(glm::vec3(50.0, 0.0, -50.0));
+  wall2vs.push_back(glm::vec3(50.0, 0.0, 50.0));
+  wall2vs.push_back(glm::vec3(50.0, 50.0, 50.0));
+  wall2vs.push_back(glm::vec3(50.0, 50.0, 50.0));
+  wall2vs.push_back(glm::vec3(50.0, 50.0, -50.0));
+  wall2vs.push_back(glm::vec3(50.0, 0.0, -50.0));
+  
+  wall3vs.push_back(glm::vec3(-50.0, 0.0, -50.0));
+  wall3vs.push_back(glm::vec3(-50.0, 50.0, -50.0));
+  wall3vs.push_back(glm::vec3(50.0, 50.0, -50.0));
+  wall3vs.push_back(glm::vec3(50.0, 50.0, -50.0));
+  wall3vs.push_back(glm::vec3(50.0, 0.0, -50.0));
+  wall3vs.push_back(glm::vec3(-50.0, 0.0, -50.0));
+  
+  wall4vs.push_back(glm::vec3(-50.0, 0.0, 50.0));
+  wall4vs.push_back(glm::vec3(-50.0, 50.0, 50.0));
+  wall4vs.push_back(glm::vec3(50.0, 50.0, 50.0));
+  wall4vs.push_back(glm::vec3(50.0, 50.0, 50.0));
+  wall4vs.push_back(glm::vec3(50.0, 0.0, 50.0));
+  wall4vs.push_back(glm::vec3(-50.0, 0.0, 50.0));
+  
+  
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  wall1ns.push_back(glm::vec3(1.0, 0.0, 0.0));
+  
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  wall2ns.push_back(glm::vec3(-1.0, 0.0, 0.0));
+  
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall3ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+  wall4ns.push_back(glm::vec3(0.0, 0.0, 1.0));
+    
+  wall1ts.push_back(glm::vec2(0.0, 0.0));
+  wall1ts.push_back(glm::vec2(0.0, 1.0));
+  wall1ts.push_back(glm::vec2(1.0, 1.0));
+  wall1ts.push_back(glm::vec2(1.0, 1.0));
+  wall1ts.push_back(glm::vec2(1.0, 0.0));
+  wall1ts.push_back(glm::vec2(0.0, 0.0));
+  
+  wall2ts.push_back(glm::vec2(0.0, 0.0));
+  wall2ts.push_back(glm::vec2(0.0, 1.0));
+  wall2ts.push_back(glm::vec2(1.0, 1.0));
+  wall2ts.push_back(glm::vec2(1.0, 1.0));
+  wall2ts.push_back(glm::vec2(1.0, 0.0));
+  wall2ts.push_back(glm::vec2(0.0, 0.0));
+  
+  wall3ts.push_back(glm::vec2(0.0, 0.0));
+  wall3ts.push_back(glm::vec2(0.0, 1.0));
+  wall3ts.push_back(glm::vec2(1.0, 1.0));
+  wall3ts.push_back(glm::vec2(1.0, 1.0));
+  wall3ts.push_back(glm::vec2(1.0, 0.0));
+  wall3ts.push_back(glm::vec2(0.0, 0.0));
+  
+  wall4ts.push_back(glm::vec2(0.0, 0.0));
+  wall4ts.push_back(glm::vec2(0.0, 1.0));
+  wall4ts.push_back(glm::vec2(1.0, 1.0));
+  wall4ts.push_back(glm::vec2(1.0, 1.0));
+  wall4ts.push_back(glm::vec2(1.0, 0.0));
+  wall4ts.push_back(glm::vec2(0.0, 0.0));
+  
+  PhysicsManager::getInstance()->createBox(wall1vs);  
+  PhysicsManager::getInstance()->createBox(wall2vs);  
+  PhysicsManager::getInstance()->createBox(wall3vs);  
+  PhysicsManager::getInstance()->createBox(wall4vs);  
+  GraphicsComponent *wall1 = Renderer::getInstance()->createStaticGraphicsComponent(wall1vs, wall1ns, wall1ts);
+  wall1->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
+  wall1->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  wall1->addSamplerLocation(glGetUniformLocation(wall1->getShaderProgram(), "lctexture"));
+  
+  PhysicsManager::getInstance()->createBox(vs);
+  GraphicsComponent *wall2 = Renderer::getInstance()->createStaticGraphicsComponent(wall2vs, wall2ns, wall2ts);
+  wall2->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
+  wall2->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  wall2->addSamplerLocation(glGetUniformLocation(wall2->getShaderProgram(), "lctexture"));
+  
+  GraphicsComponent *wall3 = Renderer::getInstance()->createStaticGraphicsComponent(wall3vs, wall3ns, wall3ts);
+  wall3->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
+  wall3->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  wall3->addSamplerLocation(glGetUniformLocation(wall3->getShaderProgram(), "lctexture"));
+  
+  GraphicsComponent *wall4 = Renderer::getInstance()->createStaticGraphicsComponent(wall4vs, wall4ns, wall4ts);
+  wall4->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
+  wall4->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  wall4->addSamplerLocation(glGetUniformLocation(wall4->getShaderProgram(), "lctexture"));
   //Create Ground
     //Yeah right, not yet. BLACKNESS.
 }
