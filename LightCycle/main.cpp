@@ -6,7 +6,7 @@
 
 int main()
 {
-  ApplicationFramework A;
+  ApplicationFramework A(1200, 800);
   A.initialize();
   A.run();
   A.shutDown();

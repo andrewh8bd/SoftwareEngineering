@@ -42,6 +42,16 @@ void PhysicsManager::update()
         (*a)->intersect(*b);
       }
     }
+    glPushMatrix();
+    glMultMatrixf(glm::value_ptr((*a)->getTransformation()));
+    glBegin(GL_LINES);
+    for(int i = 0; i < 4; i++)
+    {
+      glVertex3f((*a)->getCorners()[i][0], 1.0, (*a)->getCorners()[i][1]);
+      glVertex3f((*a)->getCorners()[(i+1)%4][0], 1.0, (*a)->getCorners()[(i+1)%4][1]);
+    }
+    glEnd();
+    glPopMatrix();
   }
 }
 

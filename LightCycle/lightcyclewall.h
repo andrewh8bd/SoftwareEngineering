@@ -18,6 +18,7 @@ class LightCycleWall
   void setEndPoint(const glm::vec3&);
   Box2D* getBoundingBox() const;
   void setColor(const glm::vec4&);
+  void setScale(const glm::vec3&);
 };
 
 #endif

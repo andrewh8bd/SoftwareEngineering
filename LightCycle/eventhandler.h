@@ -2,6 +2,7 @@
 #define EVENTHANDLER_H
 #include "keyboardevent.h"
 #include "mouseevent.h"
+#include "collisionevent.h"
 #include "action.h"
 #include <vector>
 #include <map>
@@ -38,6 +39,7 @@ class EventHandler
   MouseEvent* createMouseClickHotspotEvent(const int, const unsigned int, const unsigned int,
                                            const unsigned int, const unsigned int, Action*);
   void createConstantEvent(Action*);
+  CollisionEvent* createCollisionEvent(Action*);
   void update(float deltatime);
   void dump();
   std::vector<EventToAction> getEvents() const;

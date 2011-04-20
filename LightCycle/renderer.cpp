@@ -3,6 +3,7 @@
 #include "ogl-math/glm/gtc/type_ptr.hpp"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 Renderer* Renderer::m_instance = NULL;
 Renderer::Renderer() : m_staticvertexbufferobject(0), m_dynamicvertexbufferobject(0),
@@ -390,4 +391,246 @@ void Renderer::render()
 void Renderer::dump()
 {
   delete m_instance;
+}
+
+
+GraphicsComponent* Renderer::createStaticGraphicsComponentFromFile(const std::string s)
+{
+  std::ifstream infile(s.c_str());
+  std::string buffer;
+  std::string temp;
+  std::string temp2;
+  std::vector<glm::vec3> rawvs;
+  std::vector<glm::vec3> rawns;
+  std::vector<glm::vec2> rawts;
+  std::vector<glm::vec3> vs;
+  std::vector<glm::vec3> ns;
+  std::vector<glm::vec2> ts;
+  if(!infile.is_open())
+  {
+    std::cout<<"File could not be opened."<<std::endl;
+    return NULL;
+  }
+  
+  int i = 0;
+  while(!infile.eof())
+  {
+    getline(infile, buffer);
+    std::istringstream line(buffer);
+    if(buffer.substr(0, 6) == "mtllib")
+    {
+        line >> temp >> temp2;
+        //o.IsMaterial = true;
+        //o.AddMaterial(Material(temp2));
+    }
+    if(buffer.substr(0, 2) == "vt")
+    {
+      double f1, f2;
+      line >> temp >> f1 >> f2;
+      rawts.push_back(glm::vec2(static_cast<float>(f1), static_cast<float>(f2)));
+    }
+    else if(buffer.substr(0, 2) == "vn")
+    {
+      double f1, f2, f3;
+      line >> temp >> f1 >> f2 >> f3;
+      rawns.push_back(glm::vec3(static_cast<float>(f1), static_cast<float>(f2),
+                                static_cast<float>(f3)));
+    }
+    else if(buffer.substr(0, 1) == "v" && buffer.substr(0, 2) != "vn" && buffer.substr(0, 2) != "vt")
+    {
+      double f1, f2, f3;
+      line >> temp >> f1 >> f2 >> f3;
+      rawvs.push_back(glm::vec3(static_cast<float>(f1), static_cast<float>(f2),
+                                static_cast<float>(f3)));
+    }
+    else if(buffer.substr(0, 1) == "f")
+    {
+      char buffer[100];
+      std::string s1, s2, s3;
+      int len1, len2, len3;
+      int vertices[3];
+      int normals[3];
+      int texcoords[3];
+      line >> temp >> s1 >> s2 >> s3;
+      len1 = s1.find_first_of('/');
+      
+      vertices[0] = atoi((s1.substr(0, len1)).c_str());
+      std::cout<<vertices[0]<<std::endl;
+      len2 = s1.find_last_of('/');
+      if(len2 > len1 + 1)
+        texcoords[0] = atoi((s1.substr(len1 + 1, len2 - len1 - 1)).c_str());
+      else
+        texcoords[0] = -1;
+      len3 = s1.size();
+      normals[0] = atoi((s1.substr(len2 + 1, len3 - len2).c_str()));
+      
+      len1 = s2.find_first_of('/');
+      
+      vertices[1] = atoi((s2.substr(0, len1)).c_str());
+      std::cout<<vertices[1]<<std::endl;
+      
+      len2 = s2.find_last_of('/');
+      if(len2 > len1 + 1)
+        texcoords[1] = atoi((s2.substr(len1 + 1, len2 - len1 - 1)).c_str());
+      else
+        texcoords[1] = -1;
+        
+      len3 = s2.size();
+      
+      normals[1] = atoi((s2.substr(len2 + 1, len3 - len2).c_str()));
+      len1 = s3.find_first_of('/');
+      vertices[2] = atoi((s3.substr(0, len1)).c_str());
+      std::cout<<vertices[2]<<std::endl;
+      
+      len2 = s3.find_last_of('/');
+      if(len2 > len1 + 1)
+        texcoords[2] = atoi((s3.substr(len1 + 1, len2 - len1 - 1)).c_str());
+      else
+        texcoords[2] = -1;
+      len3 = s3.size();
+      normals[2] = atoi((s3.substr(len2 + 1, len3 - len2).c_str()));
+      
+      vs.push_back(rawvs[vertices[0]-1]);
+      vs.push_back(rawvs[vertices[1]-1]);
+      vs.push_back(rawvs[vertices[2]-1]);
+      ns.push_back(rawns[normals[0]-1]);
+      ns.push_back(rawns[normals[1]-1]);
+      ns.push_back(rawns[normals[2]-1]);
+      if(texcoords[0] > 0)
+        ts.push_back(rawts[texcoords[0]-1]);
+      else
+        ts.push_back(glm::vec2(0.0, 0.0));
+      if(texcoords[1] > 0)
+        ts.push_back(rawts[texcoords[1]-1]);
+      else
+        ts.push_back(glm::vec2(0.0, 0.0));
+      if(texcoords[2] > 0)
+        ts.push_back(rawts[texcoords[2]-1]);
+      else
+        ts.push_back(glm::vec2(0.0, 0.0));
+    }
+    else if(buffer.substr(0, 1) == "s")
+    {
+    }
+  }
+  infile.close();
+  
+  for(std::vector<glm::vec3>::iterator it = vs.begin(); it!=vs.end(); it++)
+  {
+    std::cout<<(*it)[0]<<" "<<(*it)[1]<<" "<<(*it)[2]<<" "<<std::endl;
+  }
+  
+  /*ts.clear();
+  
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+  
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));*/
+  
+  /*infile.clear();
+  if(o.IsMaterial)
+  {
+      std::ifstream infile2(o.GetMaterial().GetFilename().c_str());
+      Material tmpMat;
+      if(!infile2.is_open())
+      {
+          MessageBox(NULL, ".mtl Failed to Open", "ERROR!", MB_ICONEXCLAMATION);
+          return;
+      }
+      while(!infile2.eof())
+      {
+          getline(infile2, buffer);
+          std::istringstream line(buffer);
+          std::string temp;
+          float f1, f2, f3;
+          if(buffer.substr(0, 5) == "illum")
+          {
+              tmpMat.SpecularOn = true;
+          }
+          else if(buffer.substr(0, 2) == "Ka")
+          {
+              line >> temp >> f1 >> f2 >> f3;
+              tmpMat.Ambient.x = f1;
+              tmpMat.Ambient.y = f2;
+              tmpMat.Ambient.z = f3;
+          }
+          else if(buffer.substr(0, 2) == "Kd")
+          {
+              line >> temp >> f1 >> f2 >> f3;
+              tmpMat.Diffuse.x = f1;
+              tmpMat.Diffuse.y = f2;
+              tmpMat.Diffuse.z = f3;
+          }
+          else if(buffer.substr(0, 2) == "Ks")
+          {
+              line >> temp >> f1 >> f2 >> f3;
+              tmpMat.Specular.x = f1;
+              tmpMat.Specular.y = f2;
+              tmpMat.Specular.z = f3;
+          }
+          else if(buffer.substr(0, 2) == "Ns")
+          {
+              line >> temp >> f1;
+              tmpMat.Shininess = f1;
+          }
+          else if(buffer.substr(0, 2) == "Tr" || buffer.substr(0, 1) == "d")
+          {
+              line >> temp >> f1;
+              tmpMat.Transparency = f1;
+          }
+          else if(buffer.substr(0, 6) == "map_Kd")
+          {
+          }
+          else if(buffer.substr(0, 2) == "Tf")
+          {
+              line >> temp >> f1 >> f2 >> f3;
+              tmpMat.TransmissionFilter.x = f1;
+              tmpMat.TransmissionFilter.y = f2;
+              tmpMat.TransmissionFilter.z = f3;
+          }
+      }
+      o.AddMaterial(tmpMat);
+      infile2.close();
+      infile2.clear();
+  }*/
+  
+  return createStaticGraphicsComponent(vs, ns, ts);
 }

@@ -7,6 +7,8 @@
 #include "lightcycleforwardaction.h"
 #include "cameraforwardaction.h"
 #include "physicsmanager.h"
+#include "collisionevent.h"
+#include "lightcycleloseaction.h"
 #include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include "ogl-math/glm/gtc/type_ptr.hpp"
 #include <GL/glfw.h>
@@ -48,6 +50,7 @@ void ApplicationFramework::run()
   float lasttime = glfwGetTime();
   float starttime = glfwGetTime();
   unsigned int fps = 0;
+  float lolrot = 0.0;
   //While a window exists
   while(glfwGetWindowParam(GLFW_OPENED))
   {
@@ -70,29 +73,32 @@ void ApplicationFramework::run()
     
     switch(m_currentstate)
     {
+     
       case MAIN_MENU:
         //nothing to see here, move along
         break;
       case GAME:
         //This isn't the switch case you're looking for.
-        glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glViewport(0, 0, m_windowwidth, m_windowheight);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         m_currentcamera->update(glfwGetTime() - lasttime);
+        glPushMatrix();
+        glRotatef(lolrot+=0.1, 0.0, 1.0, 0.0);
         Renderer::getInstance()->render();
+        glPopMatrix();
         
-        
-        glViewport(m_windowwidth / 2, 0, m_windowwidth / 2, m_windowheight);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2.0), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        m_secondcamera->update(glfwGetTime() - lasttime);
-        Renderer::getInstance()->render();
+     //   glViewport(m_windowwidth / 2, 0, m_windowwidth / 2, m_windowheight);
+     //   glMatrixMode(GL_PROJECTION);
+     //   glLoadIdentity();
+     //   glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2.0), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+     //   glMatrixMode(GL_MODELVIEW);
+     //   glLoadIdentity();
+     //   m_secondcamera->update(glfwGetTime() - lasttime);
+     //  Renderer::getInstance()->render();
         
         break;
       default:
@@ -258,16 +264,16 @@ void ApplicationFramework::switchToGameState()
   ts.push_back(glm::vec2(0.0, 0.0));
   
   //Create camera, as well as a few actions for it
-  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, -25.0), glm::vec3(25.0, 0.0, 0.0));
-  TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
-  TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
-  CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
-  CameraAccelerateAction* cd = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), true);
-  CameraAccelerateAction* ce = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), false);
-  CameraAccelerateAction* cf = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), false);
-  CameraAccelerateAction* cg = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), true);
+  m_currentcamera = new Camera(glm::vec3(0.0, 2.0, -2.0), glm::vec3(45.0, 0.0, 0.0));
+  //TurnCameraAction* ca = new TurnCameraAction(m_currentcamera, RIGHT);
+  //TurnCameraAction* cb = new TurnCameraAction(m_currentcamera, LEFT);
+  //CameraForwardAction* cc = new CameraForwardAction(m_currentcamera, glm::vec3(0.0, 0.0, 6.0));
+  //CameraAccelerateAction* cd = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), true);
+  //CameraAccelerateAction* ce = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), false);
+  //CameraAccelerateAction* cf = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, 1.0), false);
+  //CameraAccelerateAction* cg = new CameraAccelerateAction(m_currentcamera, glm::vec3(0.0, 0.0, -1.0), true);
   
-  m_secondcamera = new Camera(glm::vec3(0.0, 2.0, 25.0), glm::vec3(25.0, 180.0, 0.0));
+  /*m_secondcamera = new Camera(glm::vec3(0.0, 2.0, 25.0), glm::vec3(25.0, 180.0, 0.0));
   TurnCameraAction* ca2 = new TurnCameraAction(m_secondcamera, RIGHT);
   TurnCameraAction* cb2 = new TurnCameraAction(m_secondcamera, LEFT);
   CameraForwardAction* cc2 = new CameraForwardAction(m_secondcamera, glm::vec3(0.0, 0.0, -6.0));
@@ -275,16 +281,20 @@ void ApplicationFramework::switchToGameState()
   CameraAccelerateAction* ce2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, 1.0), false);
   CameraAccelerateAction* cf2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, -1.0), false);
   CameraAccelerateAction* cg2 = new CameraAccelerateAction(m_secondcamera, glm::vec3(0.0, 0.0, 1.0), true);
-  //Create light cycle as well as a few actions for it
-  GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+  //Create light cycle as well as a few actions for it*/
+  GraphicsComponent *g = Renderer::getInstance()->createStaticGraphicsComponentFromFile("../LightCycle.obj");
   g->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcycle.vert", "lightcycle.frag"));
-  g->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
+  g->addTexture(Renderer::getInstance()->loadAndGetTexture("../vulture_specular.tga"));
   g->addSamplerLocation(glGetUniformLocation(g->getShaderProgram(), "lctexture"));
   
-  Box2D* gbox = PhysicsManager::getInstance()->createBox(vs);
+ /* Box2D* gbox = PhysicsManager::getInstance()->createBox(vs);
   
   LightCycle* l = new LightCycle(g, gbox, glm::vec3(0.0, 0.0, -25.0),
                                  glm::vec3(0.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0));
+                                 
+  LightCycleLoseAction* j = new LightCycleLoseAction(l, m_currentcamera, 2.0);
+  CollisionEvent* l1ce = EventHandler::getInstance()->createCollisionEvent(j);
+  l->setCollisionEvent(l1ce);
   l->addNewWall();
   TurnLightCycleAction* a = new TurnLightCycleAction(l, RIGHT);
   TurnLightCycleAction* b = new TurnLightCycleAction(l, LEFT);
@@ -294,15 +304,20 @@ void ApplicationFramework::switchToGameState()
   LightCycleAccelerateAction* h = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, 1.0), false);
   LightCycleAccelerateAction* i = new LightCycleAccelerateAction(l, glm::vec3(0.0, 0.0, -1.0), true);
   
-  
   Box2D* gbox2 = PhysicsManager::getInstance()->createBox(vs);
   GraphicsComponent *g2 = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
   g2->setShaderProgram(Renderer::getInstance()->loadAndGetShader("lightcycle.vert", "lightcycle.frag"));
   g2->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
   g2->addSamplerLocation(glGetUniformLocation(g2->getShaderProgram(), "lctexture"));
   
+  
   LightCycle* l2 = new LightCycle(g2, gbox2, glm::vec3(0.0, 0.0, 25.0),
                                  glm::vec3(0.0, 180.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0));
+                                     
+  LightCycleLoseAction* j2 = new LightCycleLoseAction(l2, m_secondcamera, 2.0);
+  CollisionEvent* l2ce = EventHandler::getInstance()->createCollisionEvent(j2);
+  l2->setCollisionEvent(l2ce);
+                                 
   l2->addNewWall();
   TurnLightCycleAction* a2 = new TurnLightCycleAction(l2, RIGHT);
   TurnLightCycleAction* b2 = new TurnLightCycleAction(l2, LEFT);
@@ -330,7 +345,7 @@ void ApplicationFramework::switchToGameState()
   EventHandler::getInstance()->createKeyboardEvent('S', KEY_RELEASED, cf);
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c);
-  EventHandler::getInstance()->createConstantEvent(cc);
+  //EventHandler::getInstance()->createConstantEvent(cc);
   
   
   EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_LEFT, KEY_PRESSED, b2);
@@ -347,7 +362,7 @@ void ApplicationFramework::switchToGameState()
   EventHandler::getInstance()->createKeyboardEvent(GLFW_KEY_DOWN, KEY_RELEASED, cf2);
   //Or constant events that happen allllll the time
   EventHandler::getInstance()->createConstantEvent(c2);
-  EventHandler::getInstance()->createConstantEvent(cc2);
+  EventHandler::getInstance()->createConstantEvent(cc2);*/
   
   std::vector<glm::vec3> wall1vs;
   std::vector<glm::vec3> wall2vs;
@@ -446,16 +461,15 @@ void ApplicationFramework::switchToGameState()
   wall4ts.push_back(glm::vec2(1.0, 0.0));
   wall4ts.push_back(glm::vec2(0.0, 0.0));
   
-  PhysicsManager::getInstance()->createBox(wall1vs);  
+ /* PhysicsManager::getInstance()->createBox(wall1vs);  
   PhysicsManager::getInstance()->createBox(wall2vs);  
   PhysicsManager::getInstance()->createBox(wall3vs);  
-  PhysicsManager::getInstance()->createBox(wall4vs);  
+  PhysicsManager::getInstance()->createBox(wall4vs);  */
   GraphicsComponent *wall1 = Renderer::getInstance()->createStaticGraphicsComponent(wall1vs, wall1ns, wall1ts);
   wall1->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
   wall1->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));
   wall1->addSamplerLocation(glGetUniformLocation(wall1->getShaderProgram(), "lctexture"));
   
-  PhysicsManager::getInstance()->createBox(vs);
   GraphicsComponent *wall2 = Renderer::getInstance()->createStaticGraphicsComponent(wall2vs, wall2ns, wall2ts);
   wall2->setShaderProgram(Renderer::getInstance()->loadAndGetShader("wall.vert", "wall.frag"));
   wall2->addTexture(Renderer::getInstance()->loadAndGetTexture("blah.png"));

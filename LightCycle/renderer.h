@@ -51,6 +51,7 @@ class Renderer
                                                      const std::vector<glm::vec2>&);
     GraphicsComponent* createDynamicGraphicsComponent(const std::vector<glm::vec3>&, const std::vector<glm::vec3>&,
                                                       const std::vector<glm::vec2>&);
+    GraphicsComponent* createStaticGraphicsComponentFromFile(const std::string);
     unsigned int loadAndGetShader(std::string, std::string);
     unsigned int loadAndGetTexture(std::string);
     void render();

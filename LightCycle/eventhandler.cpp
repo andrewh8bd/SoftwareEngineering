@@ -78,6 +78,17 @@ void EventHandler::createConstantEvent(Action* a)
   m_events.push_back(ea);
 }
 
+CollisionEvent* EventHandler::createCollisionEvent(Action* a)
+{
+  CollisionEvent* ce = new CollisionEvent;
+  EventToAction ea;
+  ea.a = a;
+  ea.e = ce;
+  m_events.push_back(ea);
+  
+  return ce;
+}
+
 void EventHandler::update(float deltatime)
 {
   //If there are active actions, update them!

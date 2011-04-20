@@ -4,6 +4,7 @@
 #include "graphicscomponent.h"
 #include "gameobject.h"
 #include "lightcyclewall.h"
+#include "collisionevent.h"
 #include "box2d.h"
 #include <vector>
 
@@ -32,10 +33,11 @@ class LightCycle : public GameObject
   std::vector<LightCycleWall*> m_walls; //The one one the back is the one connected 
                                         //to the light cycle.
   bool m_alreadyturning;
-  
+  CollisionEvent* m_collideevent;
   public:
   LightCycle(GraphicsComponent* g = NULL, Box2D* box = NULL, const glm::vec3& pos = glm::vec3(0.0, 0.0, 0.0),
-             const glm::vec3& rot = glm::vec3(0.0, 0.0, 0.0), const glm::vec4& color = glm::vec4(1.0, 1.0, 1.0, 1.0));
+             const glm::vec3& rot = glm::vec3(0.0, 0.0, 0.0), const glm::vec4& color = glm::vec4(1.0, 1.0, 1.0, 1.0),
+             CollisionEvent* c = NULL);
   ~LightCycle();
   void setColor(const glm::vec4&);
   glm::vec4 getColor() const;
@@ -47,6 +49,8 @@ class LightCycle : public GameObject
   glm::vec3 getRotation() const;
   void setVelocity(const glm::vec3&);
   glm::vec3 getVelocity() const;
+  void setScale(const glm::vec3&);
+  glm::vec3 getScale() const;
   void setAcceleration(const glm::vec3&);
   glm::vec3 getAngularVelocity() const;
   void setAngularVelocity(const glm::vec3&);
@@ -61,6 +65,7 @@ class LightCycle : public GameObject
   void update(const float deltatime);
   void setAlreadyTurning(const bool);
   bool getAlreadyTurning() const;
+  void setCollisionEvent(CollisionEvent*);
 };
 
 #endif

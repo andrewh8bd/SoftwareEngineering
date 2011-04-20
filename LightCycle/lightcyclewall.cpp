@@ -1,4 +1,5 @@
 #include "lightcyclewall.h"
+#include "ogl-math/glm/gtc/matrix_transform.hpp"
 #include <GL/GLee.h>
 
 LightCycleWall::LightCycleWall() : m_color(glm::vec4(1.0, 1.0, 1.0, 1.0)), m_graphicscomponent(NULL), m_boundingbox(NULL)
@@ -56,3 +57,8 @@ void LightCycleWall::setColor(const glm::vec4& c)
   m_color = c;
 }
 
+void LightCycleWall::setScale(const glm::vec3& s)
+{
+  glm::mat4 newtrans = glm::scale(glm::mat4(1.0), s);
+  m_graphicscomponent->setTransformation(newtrans);
+}

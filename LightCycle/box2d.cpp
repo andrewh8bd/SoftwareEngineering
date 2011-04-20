@@ -10,11 +10,10 @@ Box2D::Box2D() : m_transform(1.0)
 
 Box2D::Box2D(const std::vector<glm::vec3>& vs)
 {
-  float maxx = std::numeric_limits<float>::min();
+  float maxx = std::numeric_limits<float>::max() * -1.0;
   float minx = std::numeric_limits<float>::max();
-  float maxz = std::numeric_limits<float>::min();
+  float maxz = std::numeric_limits<float>::max() * -1.0;
   float minz = std::numeric_limits<float>::max();
-  
   for(std::vector<glm::vec3>::const_iterator it = vs.begin(); it != vs.end(); it++)
   {
     if((*it)[0] > maxx) maxx = (*it)[0];
@@ -22,12 +21,11 @@ Box2D::Box2D(const std::vector<glm::vec3>& vs)
     if((*it)[2] > maxz) maxz = (*it)[2];
     if((*it)[2] < minz) minz = (*it)[2];
   }
-  
   m_corners[0] = glm::vec2(maxx, maxz);
   m_corners[1] = glm::vec2(maxx, minz);
   m_corners[2] = glm::vec2(minx, minz);
   m_corners[3] = glm::vec2(minx, maxz);
-  
+    
 }
 
 Box2D::Box2D(const glm::vec2& a, const glm::vec2& b)
@@ -57,6 +55,17 @@ bool Box2D::intersect(Box2D* l)
   transformedcorners2[2] = l->m_transform * glm::vec4(l->m_corners[2][0], 1.0, l->m_corners[2][1], 1.0);
   transformedcorners2[3] = l->m_transform * glm::vec4(l->m_corners[3][0], 1.0, l->m_corners[3][1], 1.0);
   
+  std::cout<<transformedcorners1[0][0]<<" "<<transformedcorners1[0][1]<<" "<<transformedcorners1[0][2]<<std::endl;
+  std::cout<<transformedcorners1[1][0]<<" "<<transformedcorners1[1][1]<<" "<<transformedcorners1[1][2]<<std::endl;
+  std::cout<<transformedcorners1[2][0]<<" "<<transformedcorners1[2][1]<<" "<<transformedcorners1[2][2]<<std::endl;
+  std::cout<<transformedcorners1[3][0]<<" "<<transformedcorners1[3][1]<<" "<<transformedcorners1[3][2]<<std::endl;
+  std::cout<<std::endl;
+  std::cout<<transformedcorners2[0][0]<<" "<<transformedcorners2[0][1]<<" "<<transformedcorners2[0][2]<<std::endl;
+  std::cout<<transformedcorners2[1][0]<<" "<<transformedcorners2[1][1]<<" "<<transformedcorners2[1][2]<<std::endl;
+  std::cout<<transformedcorners2[2][0]<<" "<<transformedcorners2[2][1]<<" "<<transformedcorners2[2][2]<<std::endl;
+  std::cout<<transformedcorners2[3][0]<<" "<<transformedcorners2[3][1]<<" "<<transformedcorners2[3][2]<<std::endl;
+  std::cout<<std::endl<<std::endl;
+  std::cin.get();
   for(int a=0; a<4; a++)
   {
     for(int b=0; b<4; b++)
@@ -81,6 +90,14 @@ bool Box2D::lineIntersect(const glm::vec2& beg1, const glm::vec2& end1, const gl
   glm::vec2 c = beg2;
   glm::vec2 d = end2;
   
+  if(a == c || a == d || b == c || b == d)
+    return true;
+    
+  if((a[0] == c[0] && ((a[1] <= d[1] && a[1] >= c[1]) || (a[1] >= d[1] && a[1] <= c[1]))) ||
+     (a[1] == c[1] && ((a[0] <= d[0] && a[0] >= c[0]) || (a[0] >= d[0] && a[0] <= c[0]))) ||
+     (b[0] == c[0] && ((b[1] <= d[1] && b[1] >= c[1]) || (b[1] >= d[1] && b[1] <= c[1]))) ||
+     (b[1] == c[1] && ((b[0] <= d[0] && b[0] >= c[0]) || (b[0] >= d[0] && b[0] <= c[0]))))
+    return true;  
   float rnum = (a[1]-c[1]) * (d[0]-c[0]) - (a[0]-c[0]) * (d[1]-c[1]);
   float rden = (b[0]-a[0]) * (d[1]-c[1]) - (b[1]-a[1]) * (d[0]-c[0]);
   float snum = (a[1]-c[1]) * (b[0]-a[0]) - (a[0]-c[0]) * (b[1]-a[1]);

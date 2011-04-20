@@ -7,11 +7,11 @@
 #include <iostream>
 #include <vector>
 
-LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, const glm::vec3& rot, const glm::vec4& color)
+LightCycle::LightCycle(GraphicsComponent* g, Box2D* box, const glm::vec3& pos, const glm::vec3& rot, const glm::vec4& color, CollisionEvent* ce)
   : m_graphicscomponent(g), m_color(color), m_velocity(glm::vec3(0.0, 0.0, 0.0)),
     m_acceleration(glm::vec3(0.0, 0.0, 0.0)), m_angularvelocity(glm::vec3(0.0, 0.0, 0.0)),
     m_angularacceleration(glm::vec3(0.0, 0.0, 0.0)), 
-    GameObject(pos, rot), m_boundingbox(box), m_alreadyturning(false)
+    GameObject(pos, rot), m_boundingbox(box), m_alreadyturning(false), m_collideevent(ce)
 {
   if(g != NULL)
   {
@@ -197,6 +197,7 @@ void LightCycle::update(const float deltatime)
 {
   glm::mat4 newtrans(1.0);
   
+  newtrans = glm::scale(newtrans, m_scale);
   newtrans = glm::translate(newtrans, m_position);
   newtrans = glm::rotate(newtrans, m_rotation[0], glm::vec3(1.0, 0.0, 0.0));
   newtrans = glm::rotate(newtrans, m_rotation[1], glm::vec3(0.0, 1.0, 0.0));
@@ -210,6 +211,10 @@ void LightCycle::update(const float deltatime)
   {
     if(*it != m_walls.back()->getBoundingBox() && (m_walls.size() >= 2 && m_walls[m_walls.size() - 2]->getBoundingBox() != (*it)))
     {
+      if(m_collideevent != NULL)
+      {
+        m_collideevent->setColliding();
+      }
     }
   }
   m_boundingbox->clearColliders();
@@ -234,4 +239,23 @@ void LightCycle::setAlreadyTurning(const bool a)
 bool LightCycle::getAlreadyTurning() const
 {
   return m_alreadyturning;
+}
+
+void LightCycle::setScale(const glm::vec3& v)
+{
+  m_scale = v;
+  for(std::vector<LightCycleWall*>::iterator it = m_walls.begin(); it != m_walls.end(); it++)
+  {
+    (*it)->setScale(v);
+  }
+}
+
+glm::vec3 LightCycle::getScale() const 
+{
+  return m_scale;
+}
+
+void LightCycle::setCollisionEvent(CollisionEvent* c)
+{
+  m_collideevent = c;
 }
