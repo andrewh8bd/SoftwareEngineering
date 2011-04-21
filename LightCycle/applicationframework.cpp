@@ -38,7 +38,8 @@ void ApplicationFramework::initialize()
   Renderer::getInstance()->initialize();
     
   //Switch to game state for now, since we don't have a menu.
-  switchToGameState();
+  //switchToGameState();
+  switchToMainMenuState();
 }
 
 //Main loop runs in this.
@@ -71,7 +72,11 @@ void ApplicationFramework::run()
     switch(m_currentstate)
     {
       case MAIN_MENU:
-        //nothing to see here, move along
+        //copy pasta!  Maybe this does something?
+		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
         break;
       case GAME:
         //This isn't the switch case you're looking for.
@@ -95,6 +100,12 @@ void ApplicationFramework::run()
         Renderer::getInstance()->render();
         
         break;
+	  case OPTIONS:
+		  //For the options menu!
+		  break;
+	  case COLOR;
+		  //Where you choose your lightcycle color
+		  break;
       default:
         break;
     }
@@ -119,6 +130,36 @@ void ApplicationFramework::run()
 void ApplicationFramework::switchToMainMenuState()
 {
   m_currentstate = MAIN_MENU;
+  //Load up Main Menu CHANGES HERE
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Menu.jpg"));
+  Renderer::getInstance()->render();
+
+  //Actions!  Need to create headers/sourcefiles for these
+  ChangeMenu* chng1 = new ChangeMenu(OPTIONS); 
+  ChangeMenu* chng2 = new ChangeMenu(MULTI);
+  ChangeMenu* chng3 = new ChangeMenu(SINGLE);
+  Quit* quitter = new Quit(); 
+  //Click da buttons!  //Top Right x1,y1 Bottom Left x2,y2
+  EventHandler::getInstance()-> createMouseClickHotspotEvent(281, 507, 762, 450, chng1); //Go to Options Menu!
+  EventHandler::getInstance()-> createMouseClickHotspotEvent(281, 402, 524, 450, chng2);//Go to choose color (Multi)
+  EventHandler::getInstance()-> createMouseClickHotspotEvent(40, 402, 281, 450, chng3); //Go to choose color (Single)
+  EventHandler::getInstance()-> createMouseClickHotspotEvent(281, 507, 522, 557, quitter); //Quit the game :(
+}
+
+void ApplicationFramework::switchToOptions()
+{
+	m_currentstate = OPTIONS;
+
+}
+
+void ApplicationFramework::switchToColor()
+{
+	m_currentstate = COLOR;
 }
 
 void ApplicationFramework::switchToGameState()

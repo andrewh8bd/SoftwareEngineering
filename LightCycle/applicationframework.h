@@ -30,6 +30,8 @@ class ApplicationFramework
   void initialize();
   void run();
   void switchToMainMenuState();
+  void switchToOptions();
+  void switchToColor();
   void switchToGameState();
   void shutDown();
 };
