@@ -72,16 +72,13 @@ void ApplicationFramework::run()
     switch(m_currentstate)
     {
       case MAIN_MENU:
-		GLfloat orthoProjection[16];
-        //copy pasta!  Maybe this does something?
+		//The menu
 		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
         glMatrixMode(GL_PROJECTION);
-		//glOrtho(0, w, h, 0, 1, 1);
-		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
-		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
         glLoadIdentity();
-		glLoadMatrixf(orthoProjection);
-		glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 		Renderer::getInstance()->render();
 
 		switch()
@@ -176,15 +173,21 @@ void ApplicationFramework::run()
 void ApplicationFramework::switchToMainMenuState()
 {
   m_currentstate = MAIN_MENU;
+  std::vector<glm::vec3> vs;
+  std::vector<glm::vec3> ns;
+  std::vector<glm::vec2> ts;
   //Load up Main Menu CHANGES HERE
+
+  vs.push_back(glm::vec3(0.0, 0.0, 0.0));
+  ns.push_back(glm::vec3(800.0, 600.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Menu.jpg"));
-  
-
+ 	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Menu.jpg"));
   //Actions!
   ChangeMenu* chng1 = new ChangeMenu(OPTIONS); 
   ChangeMenu* chng2 = new ChangeMenu(MULTI);
@@ -205,8 +208,8 @@ void ApplicationFramework::switchToOptions()
 	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Options.jpg"));
-
+	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Options.jpg"));
 	ChangeMenu* chng = new ChangeMenu(MAIN);
 
 	//Click the buttons!  Top Right x1,y1 Bottom Left x2,y2
@@ -222,7 +225,8 @@ void ApplicationFramework::switchToColor(int numPlayers)
 	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("notloadedyet.jpg"));
+	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("notloadedyet.jpg"));
 
 	ChangeMenu* chng = new ChangeMenu(MAIN);
 	ChangeMenu* chng1 = new ChangeMenu(START);
