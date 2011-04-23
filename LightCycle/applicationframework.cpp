@@ -72,11 +72,36 @@ void ApplicationFramework::run()
     switch(m_currentstate)
     {
       case MAIN_MENU:
+		GLfloat orthoProjection[16];
         //copy pasta!  Maybe this does something?
 		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
         glMatrixMode(GL_PROJECTION);
+		//glOrtho(0, w, h, 0, 1, 1);
+		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
+		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
         glLoadIdentity();
-        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+		glLoadMatrixf(orthoProjection);
+		glLoadIdentity();
+		Renderer::getInstance()->render();
+
+		switch()
+		{
+			case SINGLE:
+				switchToColor(1);
+				break;
+
+			case MULTI:
+				switchToColor(2);
+				break;
+
+			case OPTIONS:
+				switchToOptions();
+				break;
+
+			case QUIT:
+				shutdown();
+				break;
+		}
         break;
       case GAME:
         //This isn't the switch case you're looking for.
@@ -101,11 +126,32 @@ void ApplicationFramework::run()
         
         break;
 	  case OPTIONS:
-		  //For the options menu!
-		  break;
+		GLfloat orthoProjection[16];
+        //copy pasta!  Maybe this does something?
+		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glMatrixMode(GL_PROJECTION);
+		//glOrtho(0, w, h, 0, 1, 1);
+		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
+		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+        glLoadIdentity();
+		glLoadMatrixf(orthoProjection);
+		glLoadIdentity();
+		Renderer::getInstance()->render();
+		break;
 	  case COLOR;
-		  //Where you choose your lightcycle color
-		  break;
+		//Where you choose your lightcycle color
+		GLfloat orthoProjection[16];
+		//copy pasta!  Maybe this does something?
+		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glMatrixMode(GL_PROJECTION);
+		//glOrtho(0, w, h, 0, 1, 1);
+		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
+		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+        glLoadIdentity();
+		glLoadMatrixf(orthoProjection);
+		glLoadIdentity();
+		Renderer::getInstance()->render();
+		break;
       default:
         break;
     }
@@ -137,9 +183,9 @@ void ApplicationFramework::switchToMainMenuState()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Menu.jpg"));
-  Renderer::getInstance()->render();
+  
 
-  //Actions!  Need to create headers/sourcefiles for these
+  //Actions!
   ChangeMenu* chng1 = new ChangeMenu(OPTIONS); 
   ChangeMenu* chng2 = new ChangeMenu(MULTI);
   ChangeMenu* chng3 = new ChangeMenu(SINGLE);
@@ -154,12 +200,46 @@ void ApplicationFramework::switchToMainMenuState()
 void ApplicationFramework::switchToOptions()
 {
 	m_currentstate = OPTIONS;
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Options.jpg"));
+
+	ChangeMenu* chng = new ChangeMenu(MAIN);
+
+	//Click the buttons!  Top Right x1,y1 Bottom Left x2,y2
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(313, 520, 488, 570, chng); //Return to main menu
 
 }
 
-void ApplicationFramework::switchToColor()
+void ApplicationFramework::switchToColor(int numPlayers)
 {
 	m_currentstate = COLOR;
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	GraphicsComponent *menu->addTexture(Renderer::getInstance()->loadAndGetTexture("notloadedyet.jpg"));
+
+	ChangeMenu* chng = new ChangeMenu(MAIN);
+	ChangeMenu* chng1 = new ChangeMenu(START);
+	ChooseColor* clr = new ChooseColor(RED);
+	ChooseColor* clr1 = new ChooseColor(PURPLE);
+	ChooseColor* clr2 = new ChooseColor(BLUE);
+	ChooseColor* clr3 = new ChooseColor(LBLUE);
+	ChooseColor* clr4 = new ChooseColor(ORANGE);
+
+	//Click the buttons!  Top Right x1,y1 Bottom Left x2,y2
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(48, 206, 138, 300, clr4); //Picked Orange
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(200, 206, 296, 300, clr);//Picked Red
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(355, 206, 453, 206, clr1); //Picked Purple
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(513, 206, 610, 300, clr2); //Picked Blue
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(654, 206, 748, 300, clr3);//Picked LightBlue
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(320, 340, 486, 390, chng1); //EnterGame
+	EventHandler::getInstance()-> createMouseClickHotspotEvent(320, 517, 486, 568, chng); //Picked Blue
 }
 
 void ApplicationFramework::switchToGameState()
