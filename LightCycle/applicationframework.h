@@ -13,7 +13,7 @@
 /*              provides initialization and updating for different defined   */
 /*              states.                                                      */
 /*****************************************************************************/
-enum APP_STATE {MAIN_MENU, GAME};
+enum APP_STATE {MAIN_MENU, GAME, COLOR, OPTIONS};
 class ApplicationFramework
 {
   private:

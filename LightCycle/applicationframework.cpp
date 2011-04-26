@@ -73,36 +73,18 @@ void ApplicationFramework::run()
     {
       case MAIN_MENU:
 		//The menu
-		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+		glViewport(0, 0, m_windowwidth, m_windowheight);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::ortho(-1.0, 1.0, -1.0, 1.0))));
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 		Renderer::getInstance()->render();
-
-		switch()
-		{
-			case SINGLE:
-				switchToColor(1);
-				break;
-
-			case MULTI:
-				switchToColor(2);
-				break;
-
-			case OPTIONS:
-				switchToOptions();
-				break;
-
-			case QUIT:
-				shutdown();
-				break;
-		}
         break;
+
       case GAME:
         //This isn't the switch case you're looking for.
-        glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+        glViewport(0, 0, m_windowwidth / 2 ,m_windowheight);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glLoadMatrixf(glm::value_ptr(glm::mat4(glm::perspectiveFov(90.0f, static_cast<float>(m_windowwidth / 2), static_cast<float>(m_windowheight), 1.0f, 1000.0f))));
@@ -123,30 +105,22 @@ void ApplicationFramework::run()
         
         break;
 	  case OPTIONS:
-		GLfloat orthoProjection[16];
-        //copy pasta!  Maybe this does something?
-		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+		glViewport(0, 0, m_windowwidth, m_windowheight);
         glMatrixMode(GL_PROJECTION);
-		//glOrtho(0, w, h, 0, 1, 1);
-		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
-		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
         glLoadIdentity();
-		glLoadMatrixf(orthoProjection);
-		glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::ortho(-1.0, 1.0, -1.0, 1.0))));
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 		Renderer::getInstance()->render();
 		break;
 	  case COLOR;
 		//Where you choose your lightcycle color
-		GLfloat orthoProjection[16];
-		//copy pasta!  Maybe this does something?
-		glViewport(0, 0, m_windowwidth / 2, m_windowheight);
+		glViewport(0, 0, m_windowwidth, m_windowheight);
         glMatrixMode(GL_PROJECTION);
-		//glOrtho(0, w, h, 0, 1, 1);
-		glGetFloatv(GL_PROJECTION_MATRIX, orthoProjection);
-		glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
         glLoadIdentity();
-		glLoadMatrixf(orthoProjection);
-		glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(glm::mat4(glm::ortho(-1.0, 1.0, -1.0, 1.0))));
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 		Renderer::getInstance()->render();
 		break;
       default:
@@ -177,10 +151,29 @@ void ApplicationFramework::switchToMainMenuState()
   std::vector<glm::vec3> ns;
   std::vector<glm::vec2> ts;
   //Load up Main Menu CHANGES HERE
+  //Create textured square to fill the whole screen
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
 
-  vs.push_back(glm::vec3(0.0, 0.0, 0.0));
-  ns.push_back(glm::vec3(800.0, 600.0, 0.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+
   ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
@@ -189,10 +182,10 @@ void ApplicationFramework::switchToMainMenuState()
  	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
 	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Menu.jpg"));
   //Actions!
-  ChangeMenu* chng1 = new ChangeMenu(OPTIONS); 
-  ChangeMenu* chng2 = new ChangeMenu(MULTI);
-  ChangeMenu* chng3 = new ChangeMenu(SINGLE);
-  Quit* quitter = new Quit(); 
+  ChangeMenu* chng1 = new ChangeMenu(2); // 2 = Options
+  ChangeMenu* chng2 = new ChangeMenu(3);   // 3 = Multi (COLORS)
+  ChangeMenu* chng3 = new ChangeMenu(4);  // 4 = Single (COLORS)
+  ChangeMenu* quitter = new ChangeMenu(7);	  //7 = quit
   //Click da buttons!  //Top Right x1,y1 Bottom Left x2,y2
   EventHandler::getInstance()-> createMouseClickHotspotEvent(281, 507, 762, 450, chng1); //Go to Options Menu!
   EventHandler::getInstance()-> createMouseClickHotspotEvent(281, 402, 524, 450, chng2);//Go to choose color (Multi)
@@ -202,15 +195,41 @@ void ApplicationFramework::switchToMainMenuState()
 
 void ApplicationFramework::switchToOptions()
 {
-	m_currentstate = OPTIONS;
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+	std::vector<glm::vec3> vs;
+  std::vector<glm::vec3> ns;
+  std::vector<glm::vec2> ts;
+  //Load up Main Menu CHANGES HERE
+  //Create textured square to fill the whole screen
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
+
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+ 	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
 	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Options.jpg"));
-	ChangeMenu* chng = new ChangeMenu(MAIN);
+	ChangeMenu* chng = new ChangeMenu(1);
 
 	//Click the buttons!  Top Right x1,y1 Bottom Left x2,y2
 	EventHandler::getInstance()-> createMouseClickHotspotEvent(313, 520, 488, 570, chng); //Return to main menu
@@ -220,21 +239,48 @@ void ApplicationFramework::switchToOptions()
 void ApplicationFramework::switchToColor(int numPlayers)
 {
 	m_currentstate = COLOR;
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
-	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("notloadedyet.jpg"));
+	std::vector<glm::vec3> vs;
+  std::vector<glm::vec3> ns;
+  std::vector<glm::vec2> ts;
+  //Load up Main Menu CHANGES HERE
+  //Create textured square to fill the whole screen
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, 1.0, 0.0));
+  vs.push_back(glm::vec3(1.0, -1.0, 0.0));
+  vs.push_back(glm::vec3(-1.0, -1.0, 0.0));
 
-	ChangeMenu* chng = new ChangeMenu(MAIN);
-	ChangeMenu* chng1 = new ChangeMenu(START);
-	ChooseColor* clr = new ChooseColor(RED);
-	ChooseColor* clr1 = new ChooseColor(PURPLE);
-	ChooseColor* clr2 = new ChooseColor(BLUE);
-	ChooseColor* clr3 = new ChooseColor(LBLUE);
-	ChooseColor* clr4 = new ChooseColor(ORANGE);
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+  ns.push_back(glm::vec3(0.0, 0.0, -1.0));
+
+  ts.push_back(glm::vec2(0.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 1.0));
+  ts.push_back(glm::vec2(1.0, 0.0));
+  ts.push_back(glm::vec2(0.0, 0.0));
+
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, m_windowwidth / 2, m_windowheight, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+ 	GraphicsComponent *menu = Renderer::getInstance()->createStaticGraphicsComponent(vs, ns, ts);
+	menu->addTexture(Renderer::getInstance()->loadAndGetTexture("LCycle_Color.jpg"));
+
+	ChangeMenu* chng = new ChangeMenu(1); //1 = main menu
+	ChangeMenu* chng1 = new ChangeMenu(5);  //5 = Start game
+	ChooseColor* clr = new ChooseColor(10);       //Actions for colors  10 = Red
+	ChooseColor* clr1 = new ChooseColor(11);   //So many colors!    11 = Purple
+	ChooseColor* clr2 = new ChooseColor(12); // 12 = Blue
+	ChooseColor* clr3 = new ChooseColor(13); // 13 = Light Blue
+	ChooseColor* clr4 = new ChooseColor(14);  //14 = Orange
 
 	//Click the buttons!  Top Right x1,y1 Bottom Left x2,y2
 	EventHandler::getInstance()-> createMouseClickHotspotEvent(48, 206, 138, 300, clr4); //Picked Orange
